@@ -68,7 +68,7 @@ in_addr_t resolve (char host[]) {
 int main (int argc, char* argv[]) {
   
   if (argc != 3) {
-    printf ("\nUsage: rev_overlap32_test <host> <port>\n");
+    printf ("\nUsage: rev_overlap64_test <host> <port>\n");
     return 0;
   }
   
