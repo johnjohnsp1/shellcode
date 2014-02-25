@@ -47,15 +47,15 @@
   includelib ws2_32.lib
   includelib kernel32.lib
   
-	option casemap:none
+  option casemap:none
   
-	.nolist
-	.nocref
+  .nolist
+  .nocref
 WIN32_LEAN_AND_MEAN equ 1
-	include windows.inc
+  include windows.inc
   include winsock2.inc
-	.list
-	.cref
+  .list
+  .cref
   
   REMOTE_IP    equ 00100007Fh  ; 127.0.0.1
   REMOTE_PORT  equ 80
