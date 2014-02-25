@@ -5,7 +5,6 @@
 #pragma comment (lib, "ws2_32.lib")
 #define in_addr_t unsigned long
 
-// Must be compiled as console app otherwise it won't work...
 //
 // 351 bytes reverse shell for windows 64
 //
