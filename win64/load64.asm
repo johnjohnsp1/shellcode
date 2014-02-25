@@ -37,9 +37,9 @@ entrypoint:
 calc_pos:
     xor    eax, eax
     push   60h
-    pop    rsi
-    lods   qword ptr [gs:rsi]
-    mov    esi, [rax+18h]
+    pop    rcx
+    mov    rsi, [gs:rcx]
+    mov    esi, [rsi+18h]
     mov    esi, [rsi+10h]              ; InLoadOrderModuleList
     lodsd                              ; skip ntdll.dll
     mov    esi, [rax]                  ; kernel32.dll
