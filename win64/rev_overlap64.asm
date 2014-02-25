@@ -36,7 +36,7 @@
   ; 
   ; jwasm -Zp8 -bin -I .\WinInc208\Include rev_overlap64.asm
   ;
-  ; Current size: 326 bytes
+  ; Current size: 351 bytes
   ;
 
   .x64
