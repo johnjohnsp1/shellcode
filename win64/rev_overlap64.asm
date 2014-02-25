@@ -36,7 +36,7 @@
   ; 
   ; jwasm -Zp8 -bin -I .\WinInc208\Include rev_overlap64.asm
   ;
-  ; Current size: 351 bytes
+  ; Current size: 326 bytes
   ;
 
   .x64
@@ -187,6 +187,7 @@ code_start:
     push   r13
     push   r14
     push   r15
+    
     mov    r15, rsp
     and    rsp, -16
     sub    rsp, 28h
@@ -268,11 +269,11 @@ exec_cmd:
     mov    rcx, [rdi]
     call   rbp           ; WaitForSingleObject
     
-    ; close thread handle
+    ; close process handle
     mov    rcx, [rdi]
     call   rbp           ; CloseHandle
     
-    ; close process handle
+    ; close thread handle
     mov    rcx, [rdi+8]
     call   rbp           ; CloseHandle
     
