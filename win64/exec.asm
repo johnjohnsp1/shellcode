@@ -22,48 +22,61 @@
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
     .x64
-    .model flat, fastcall
+    ifndef TEST_CODE
+      .model flat, fastcall
+    endif
     .code
-code_start:
-    sub   rsp, 28h
-    jmp   init_cmd
+entrypoint:
+    push   rbx
+    push   rsi
+    push   rdi
+    push   rbp
+    
+    sub    rsp, 28h
+    jmp    init_cmd
 calc_pos:
-    xor   eax, eax
-    push  60h
-    pop   rcx
-    mov   rsi, [gs:rcx]
-    mov   esi, [rsi+18h]
-    mov   esi, [rsi+10h]               ; InLoadOrderModuleList
+    xor    eax, eax
+    push   60h
+    pop    rcx
+    mov    rsi, [gs:rcx]
+    mov    esi, [rsi+18h]
+    mov    esi, [rsi+10h]               ; InLoadOrderModuleList
     lodsd                              ; skip ntdll.dll
-    mov   esi, [rax]                   ; kernel32.dll
-    mov   edi, [rsi+30h]               ; LDR_DATA_TABLE_ENTRY.DllBase    
-    add   ecx, dword ptr[rdi+3ch]
-    mov   ebx, dword ptr[rdi+rcx+28h]
+    mov    esi, [rax]                   ; kernel32.dll
+    mov    edi, [rsi+30h]               ; LDR_DATA_TABLE_ENTRY.DllBase    
+    add    ecx, dword ptr[rdi+3ch]
+    mov    ebx, dword ptr[rdi+rcx+28h]
     
-    mov   esi, dword ptr[rdi+rbx+20h]
-    add   esi, edi
+    mov    esi, dword ptr[rdi+rbx+20h]
+    add    esi, edi
     
-    mov   ecx, dword ptr[rdi+rbx+24h]
-    add   ecx, edi
+    mov    ecx, dword ptr[rdi+rbx+24h]
+    add    ecx, edi
     cdq
 find_loop:
-    movzx ebp, word ptr[rcx+2*rdx]
-    inc   edx
+    movzx  ebp, word ptr[rcx+2*rdx]
+    inc    edx
     lodsd
-    cmp   dword ptr[rdi+rax], 'EniW'
-    jne   find_loop
+    cmp    dword ptr[rdi+rax], 'EniW'
+    jne    find_loop
 
-    mov   esi, dword ptr[rdi+rbx+1ch]
-    add   esi, edi
-    add   edi, [rsi+4*rbp]    
+    mov    esi, dword ptr[rdi+rbx+1ch]
+    add    esi, edi
+    add    edi, [rsi+4*rbp]    
     cdq    
-    pop   rcx
-    call  rdi
-    add   rsp, 28h
+    pop    rcx
+    call   rdi
+    add    rsp, 28h
+    
+    pop    rbp
+    pop    rdi
+    pop    rsi
+    pop    rbx
     ret
 init_cmd:
     call  calc_pos
 cmd_line:
-    ;db 'cmd /c echo Hello, World! >test.txt && notepad test.txt', 00h
-
-    end
+ifdef TEST_CODE
+    db 'cmd /c echo Hello, World! >test.txt && notepad test.txt', 00h
+endif
+    end entrypoint
