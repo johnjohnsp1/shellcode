@@ -129,46 +129,46 @@ WIN32_LEAN_AND_MEAN equ 1
   HOME_SPACE ends
   
   ; size is 28 bytes, sockaddr_in is 16
-  in6_addr	struct 
+  in6_addr  struct 
     union u
-      Byte_	u_char 16 dup (?)
-      Word_	u_short 8 dup (?)
+      Byte_ u_char 16 dup (?)
+      Word_ u_short 8 dup (?)
     ends
-  in6_addr	ends
+  in6_addr  ends
 
-  sockaddr_in6	struct 
-    sin6_family	  SWORD	?
-    sin6_port	    u_short	?
-    sin6_flowinfo	u_long	?
+  sockaddr_in6  struct 
+    sin6_family   SWORD ?
+    sin6_port     u_short ?
+    sin6_flowinfo u_long  ?
     sin6_addr     in6_addr <>
-    sin6_scope_id	u_long	?
-  sockaddr_in6	ends
+    sin6_scope_id u_long  ?
+  sockaddr_in6  ends
   
-  IN4_ADDR	struct 
+  IN4_ADDR  struct 
     union S_un
       struct S_un_b
-        s_b1	u_char	?
-        s_b2	u_char	?
-        s_b3	u_char	?
-        s_b4	u_char	?
+        s_b1  u_char  ?
+        s_b2  u_char  ?
+        s_b3  u_char  ?
+        s_b4  u_char  ?
       ends
     struct S_un_w
-      s_w1	u_short	?
-      s_w2	u_short	?
+      s_w1  u_short ?
+      s_w2  u_short ?
     ends
-      S_addr	u_long	?
+      S_addr  u_long  ?
     ends
-  IN4_ADDR	ends
+  IN4_ADDR  ends
 
   PIN_ADDR typedef ptr IN_ADDR
   LPIN_ADDR typedef ptr IN_ADDR
 
-  sockaddr_in4	struct 
-    sin_family	SWORD	?
-    sin_port	  WORD	?
-    sin_addr	  IN4_ADDR	<>
-    sin_zero	  SBYTE 8 dup (?)
-  sockaddr_in4	ends
+  sockaddr_in4  struct 
+    sin_family  SWORD ?
+    sin_port    WORD  ?
+    sin_addr    IN4_ADDR  <>
+    sin_zero    SBYTE 8 dup (?)
+  sockaddr_in4  ends
 
   ; Structure to represent values on stack
   ; Use -Zp8 switch in JWASM to align structures by 8 bytes
