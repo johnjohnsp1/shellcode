@@ -306,7 +306,7 @@ calc_position:
     mov    ecx, ebx
     call   rbp           ; listen
     
-    cld
+    clc
 exec_cmd:
     jc     load_data
     
