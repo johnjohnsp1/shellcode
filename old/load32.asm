@@ -1,38 +1,3 @@
-comment ~
-
-	This executes LoadLibraryA specifying "user32" as argument.
-	Observe the UNC (Universal Naming Convention) hint.
-
-	When a DLL is loaded into memory, it is passed messages from
-	the operating system, such as DLL_PROCESS_ATTACH & DLL_THREAD_ATTACH
-	
-	So, after the operating system loads a DLL into a process, the entry point of the DLL
-	will be executed.
-	Upside of this is that the DLL need not be in assembly.
-	You may use HLL coded DLL, in C/C++..etc
-	
-	Size of this code is currently 80 bytes.
-	82 with extra jump, Get/SetThreadContext can sort this out from dll loaded into mem.
-	So, its not needed, except for this example..
-
-	It doesn't do anything useful at the moment..but
-	You *could* have a stable reverse-shell, using loader like this under 100 bytes,
-	providing you have netbios share accessable to system being exploited.
-	
-	The idea was suggested by Brett Moore on darklabs dec 03
-	
-	TASM arguments.
-
-	implib -c -f -o -i kernel32.lib %SYSTEMROOT%\system32\kernel32.dll
-	tasm32 /dTASM /ml /m9 xdll.asm
-	tlink32 /Tpe /aa /x xdll.obj,,,kernel32.lib
-	
-	MASM arguments.
-	
-	ml /DMASM /Cp /coff /c /Ic:\masm32\include xdll.asm
-	link /SUBSYSTEM:WINDOWS /LIBPATH:c:\masm32\lib /SECTION:.text,W xdll.obj
-
-~
 .586
 .model flat, stdcall
 
