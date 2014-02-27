@@ -1,4 +1,3 @@
-
 #include <windows.h>
 #include <winsock.h>
 #include <stdio.h>
@@ -12,7 +11,7 @@
 // cl bind_overlap64_test.cpp
 //
 
-/* Copyright (c) 2014 Kevin Devine
+/* Copyright (c) 2014 Kevin Devine */
 /* Size = 387 bytes */
 
 char bind_overlap64[] = {
