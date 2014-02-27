@@ -79,7 +79,7 @@ int main (int argc, char* argv[]) {
   strcat ((char*)exec, cmd);
   printf ("\nAssembly : %i\nFinal Size : %i", 
     strlen (code), 
-    cmd_len + sizeof (code));
+    cmd_len + strlen (code));
   //DebugBreak();
   ((void(*)())exec)();
   VirtualFree (exec, 0, MEM_RELEASE);
