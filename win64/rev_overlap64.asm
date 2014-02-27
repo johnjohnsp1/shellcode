@@ -36,7 +36,7 @@
   ; 
   ; jwasm -Zp8 -bin -I .\WinInc208\Include rev_overlap64.asm
   ;
-  ; Current size: 351 bytes
+  ; Current size: 350 bytes
   ;
 
   .x64
@@ -392,7 +392,6 @@ hash_api:
     mov    [rsp][PUSHAQ_STRUCT._rax], rbp
     popaq
     jmp    rax
-    ret
 get_proc_address endp
 
 code_end label qword
