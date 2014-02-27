@@ -20,16 +20,16 @@ Arkon's initial solution in 6 bytes was this:
   
 32-bit translation
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x40"                                /*  inc eax
-  /* 00000003 */  "\0x90"                                /*  nop
-  /* 00000004 */  "\0x74\0x00"                           /*  je 00000006h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x40"                               /*  inc eax */
+  /* 00000003 */  "\x90"                               /*  nop */
+  /* 00000004 */  "\x74\x00"                           /*  je 00000006h */
 
 64-bit translation
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x40\0x90"                           /*  nop
-  /* 00000004 */  "\0x74\0x00"                           /*  je 00000006h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x40\x90"                           /*  nop */
+  /* 00000004 */  "\x74\x00"                           /*  je 00000006h */
 
 As Arkon explains, eax becomes 1 on 32-bit but remains zero 
 on 64-bit and makes the jump.
@@ -49,14 +49,14 @@ The following is Peter's code.
         
 32-bit
 
-    /* 00000000 */  "\0x31\0xC9"                           /*  xor ecx, ecx
-    /* 00000002 */  "\0x41"                                /*  inc ecx
-    /* 00000003 */  "\0xE2\0x00"                           /*  loop 00000005h
+    /* 00000000 */  "\x31\xC9"                          /*  xor ecx, ecx */
+    /* 00000002 */  "\x41"                              /*  inc ecx */
+    /* 00000003 */  "\xE2\x00"                          /*  loop 00000005h */
     
 64-bit
 
-    /* 00000000 */  "\0x31\0xC9"                           /*  xor ecx, ecx
-    /* 00000002 */  "\0x41\0xE2\0x00"                      /*  loop 00000005h
+    /* 00000000 */  "\x31\xC9"                          /*  xor ecx, ecx */
+    /* 00000002 */  "\x41\xE2\x00"                      /*  loop 00000005h */
 
 The 32-bit code will follow through with loop because ecx is 1. 
 The 64-bit code will branch to the is_64bit because of REX prefix.
@@ -81,14 +81,14 @@ Something similar in 5 bytes would be:
     
 32-bit
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x48"                                /*  dec eax
-  /* 00000003 */  "\0x79\0x02"                           /*  jns 00000007h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x48"                               /*  dec eax */
+  /* 00000003 */  "\x79\x02"                           /*  jns 00000007h */
 
 64-bit
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x48\0x79\0x02"                      /*  jns 00000007h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x48\x79\x02"                       /*  jns 00000007h */
 
 The 32-bit code follows through while on 64-bit it makes the jump.
 Another example using 6 bytes.
@@ -108,16 +108,16 @@ Another example using 6 bytes.
  
 32-bit
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x48"                                /*  dec eax
-  /* 00000003 */  "\0x91"                                /*  xchg eax, ecx
-  /* 00000004 */  "\0xE3\0x02"                           /*  jecxz 00000008h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x48"                               /*  dec eax */
+  /* 00000003 */  "\x91"                               /*  xchg eax, ecx */
+  /* 00000004 */  "\xE3\x02"                           /*  jecxz 00000008h */
 
 64-bit
 
-  /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-  /* 00000002 */  "\0x48\0x91"                           /*  xchg rax, rcx
-  /* 00000004 */  "\0xE3\0x02"                           /*  jrcxz 00000008h
+  /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+  /* 00000002 */  "\x48\x91"                           /*  xchg rax, rcx */
+  /* 00000004 */  "\xE3\x02"                           /*  jrcxz 00000008h */
 
     
 Another very similar to above but using jns instead of jecxz
@@ -134,16 +134,16 @@ Another very similar to above but using jns instead of jecxz
 
 32-bit
 
-    /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-    /* 00000002 */  "\0x48"                                /*  dec eax
-    /* 00000003 */  "\0x91"                                /*  xchg eax, ecx
-    /* 00000004 */  "\0x79\0x00"                           /*  jns 00000006h
+    /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+    /* 00000002 */  "\x48"                               /*  dec eax */
+    /* 00000003 */  "\x91"                               /*  xchg eax, ecx */
+    /* 00000004 */  "\x79\x00"                           /*  jns 00000006h */
 
 64-bit
 
-    /* 00000000 */  "\0x31\0xC0"                           /*  xor eax, eax
-    /* 00000002 */  "\0x48\0x91"                           /*  xchg rax, rcx
-    /* 00000004 */  "\0x79\0x00"                           /*  jns 00000006h
+    /* 00000000 */  "\x31\xC0"                           /*  xor eax, eax */
+    /* 00000002 */  "\x48\x91"                           /*  xchg rax, rcx */
+    /* 00000004 */  "\x79\x00"                           /*  jns 00000006h */
 
     
 Here's one using CDQ / CQO in 9 bytes.
@@ -163,25 +163,25 @@ Here's one using CDQ / CQO in 9 bytes.
     
 32-bit
 
-  /* 00000000 */  "\0x83\0xC8\0xFF"                      /*  or eax, FFFFFFFFh
-  /* 00000003 */  "\0x48"                                /*  dec eax
-  /* 00000004 */  "\0x99"                                /*  cdq
-  /* 00000005 */  "\0x85\0xD2"                           /*  test edx, edx
-  /* 00000007 */  "\0x74\0x00"                           /*  je 00000009h     
+  /* 00000000 */  "\x83\xC8\xFF"                       /*  or eax, FFFFFFFFh */
+  /* 00000003 */  "\x48"                               /*  dec eax */
+  /* 00000004 */  "\x99"                               /*  cdq */
+  /* 00000005 */  "\x85\xD2"                           /*  test edx, edx */
+  /* 00000007 */  "\x74\x00"                           /*  je 00000009h */ 
 
 64-bit
 
-  /* 00000000 */  "\0x83\0xC8\0xFF"                      /*  or eax, FFFFFFFFh
-  /* 00000003 */  "\0x48\0x99"                           /*  cqo
-  /* 00000005 */  "\0x85\0xD2"                           /*  test edx, edx
-  /* 00000007 */  "\0x74\0x00"                           /*  je 00000009h
+  /* 00000000 */  "\x83\xC8\xFF"                       /*  or eax, FFFFFFFFh */
+  /* 00000003 */  "\x48\x99"                           /*  cqo */
+  /* 00000005 */  "\x85\xD2"                           /*  test edx, edx */
+  /* 00000007 */  "\x74\x00"                           /*  je 00000009h */
 
 
 One from hh86 in 6 bytes
 
-  /* 00000000 */  "\0x8C\0xE8"                           /*  mov ax, gs
-  /* 00000002 */  "\0x3C\0x33"                           /*  cmp al, 33h
-  /* 00000004 */  "\0x74\0x00"                           /*  je 00000006h
+  /* 00000000 */  "\x8C\xE8"                           /*  mov ax, gs */
+  /* 00000002 */  "\x3C\x33"                           /*  cmp al, 33h */
+  /* 00000004 */  "\x74\x00"                           /*  je 00000006h */
 
 
 If you find any errors with these examples, don't hesitate to contact 
