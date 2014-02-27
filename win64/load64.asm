@@ -21,6 +21,9 @@
  ;  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
+ ;
+ ; Current Size = 94 bytes
+ 
     .x64
     ifndef TEST_CODE
       .model flat, fastcall
@@ -31,11 +34,11 @@ entrypoint:
     push   rsi
     push   rdi
     push   rbp
-    
+    mov    r15, rsp
+    and    rsp, -16
     sub    rsp, 28h
     jmp    init_param
 calc_pos:
-    xor    eax, eax
     push   60h
     pop    rcx
     mov    rsi, [gs:rcx]
@@ -64,11 +67,10 @@ find_loop:
     
     mov    esi, dword ptr[rdi+rbx+1ch]
     add    esi, edi
-    add    edi, [rsi+4*rbp]    
-    cdq    
+    add    edi, [rsi+4*rbp]  
     pop    rcx
     call   rdi
-    add    rsp, 28h
+    mov    rsp, r15
     
     pop    rbp
     pop    rdi
