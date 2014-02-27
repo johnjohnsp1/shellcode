@@ -437,7 +437,6 @@ hash_api:
     mov    [rsp][PUSHAQ_STRUCT._rax], rbp
     popaq
     jmp    rax
-    ret
 get_proc_address endp
 
 code_end label qword
