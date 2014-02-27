@@ -28,7 +28,8 @@
     .code
     
     assume fs:nothing
-code_start:
+_code_start:
+    pushad
     jmp   init_cmd
 call_winexec:
     ; obtain kernel32.dll base from PEB
@@ -65,12 +66,13 @@ load_api:
     ; call WinExec
     add   ebp, [ebx+4*edx]
     call  ebp
+    popad
     ret
 init_cmd:
     ; initialize command parameters
     push  eax     ; doesn't matter..
     call  call_winexec
-cmd_line:
-    ;db 'cmd /c echo Hello, World! >test.txt && notepad test.txt', 00h
-    
-    end
+ifdef TEST_CODE
+    db 'cmd /c echo Hello, World! >test.txt && notepad test.txt', 00h
+endif
+    end _code_start
