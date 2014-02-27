@@ -1,13 +1,12 @@
-
 #include <windows.h>
 #include <stdio.h>
 
 //
-// 104 bytes LoadLibraryA code for windows 64
+// 81 bytes LoadLibraryA code for windows 32
 //
 // Copyright (c) 2014 Kevin Devine
 //
-// cl load64_test.cpp
+// cl load32_test.cpp
 //
 
 /* Copyright (c) 2014 Kevin Devine */
