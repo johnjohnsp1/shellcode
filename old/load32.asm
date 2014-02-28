@@ -65,6 +65,6 @@ nUNCLen	equ	$-szUNC-1
 
 exit_point:
 	push	eax
-	call	ExitProcess		; only here for test & because win2k/xp crash with no imports in PE file
+	call	ExitProcess		;  here for test & because win2k/xp crash with no imports in PE file
 
 end	main
