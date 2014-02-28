@@ -216,7 +216,7 @@ code_start:
     
     mov    r15, rsp
     and    rsp, -16
-    sub    rsp, 28h
+    sub    rsp, 78h
     stc
     jmp    exec_cmd
 calc_position:
@@ -229,7 +229,7 @@ calc_position:
     xor    eax, eax
     cdq
     mov    dl, STACK_SIZE
-    sub    esp, edx
+    sub    rsp, rdx
     mov    ecx, edx
     mov    rdi, rsp 
     rep    stosb
