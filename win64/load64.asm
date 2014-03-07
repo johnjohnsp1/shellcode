@@ -22,7 +22,7 @@
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
  ;
- ; Current Size = 110 bytes
+ ; Current Size = 94 bytes
  
     .x64
     ifndef TEST_CODE
@@ -44,29 +44,32 @@ calc_pos:
     mov    rsi, [rsi+10h]
     lodsq
     mov    rsi, [rax]
-    mov    rdi, [rsi+30h] 
-    add    ecx, [rdi+3ch]
-    mov    ebx, [rdi+rcx+28h]
-    
-    mov    esi, [rdi+rbx+20h]
-    add    rsi, rdi
-    
-    mov    ecx, [rdi+rbx+24h]
-    add    rcx, rdi
-    xor    edx, edx
-find_loop:
-    movzx  ebp, word ptr[rcx+2*rdx]
-    inc    edx
+    mov    rbp, [rsi+30h] 
+    mov    eax, [rbp+3ch]
+    add    eax, ecx
+    mov    ebx, [rbp+rax+28h]
+    lea    rsi, [rbp+rbx+1ch]
+    mov    cl, 3
+load_rva:
     lodsd
-    cmp    dword ptr[rdi+rax], 'daoL'   ; LoadLibraryA
+    add    rax, rbp
+    push   rax
+    loop   load_rva
+    
+    pop    rdi
+    pop    rsi
+    pop    rbx
+find_loop:
+    movzx  edx, word ptr[rdi+rcx*2]
+    inc    ecx
+    lodsd
+    cmp    dword ptr[rbp+rax], 'daoL'
     jne    find_loop
-    cmp    byte ptr[rdi+rax+0bh], 'A'
+    cmp    byte ptr[rbp+rax+0bh], 'A'
     jne    find_loop
     
-    mov    esi, [rdi+rbx+1ch]
-    add    rsi, rdi
-    mov    eax, [rsi+4*rbp]
-    add    rax, rdi    
+    mov    eax, [rbx+rdx*4]
+    add    rax, rbp
     pop    rcx
     call   rax
     add    rsp, 48h
