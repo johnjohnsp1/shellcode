@@ -21,7 +21,7 @@
  ;  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
- ;  Size: 105 bytes
+ ;  Size: 99 bytes
  ;
     .x64
     ifndef TEST_CODE
@@ -43,28 +43,30 @@ calc_pos:
     mov    rsi, [rsi+10h]
     lodsq
     mov    rsi, [rax]
-    mov    rdi, [rsi+30h] 
-    add    ecx, [rdi+3ch]
-    mov    ebx, [rdi+rcx+28h]
-    
-    mov    esi, [rdi+rbx+20h]
-    add    rsi, rdi
-    
-    mov    ecx, [rdi+rbx+24h]
-    add    rcx, rdi
-    xor    edx, edx
-find_loop:
-    movzx  ebp, word ptr[rcx+rdx*2]
-    inc    edx
+    mov    rbp, [rsi+30h] 
+    mov    eax, [rbp+3ch]
+    add    eax, ecx
+    mov    ebx, [rbp+rax+28h]
+    lea    rsi, [rbp+rbx+1ch]
+    mov    cl, 3
+load_rva:
     lodsd
-    cmp    dword ptr[rdi+rax], 'EniW'
+    add    rax, rbp
+    push   rax
+    loop   load_rva
+    
+    pop    rdi
+    pop    rsi
+    pop    rbx
+find_loop:
+    movzx  edx, word ptr[rdi+rcx*2]
+    inc    ecx
+    lodsd
+    cmp    dword ptr[rbp+rax], 'EniW'
     jne    find_loop
     
-    mov    esi, [rdi+rbx+28]
-    add    rsi, rdi
-    mov    eax, [rsi+rbp*4]
-    add    rax, rdi
-    xor    edx, edx    
+    mov    eax, [rbx+rdx*4]
+    add    rax, rbp  
     pop    rcx
     call   rax
     add    rsp, 48h
