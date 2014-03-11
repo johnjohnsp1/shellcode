@@ -1,8 +1,8 @@
 
 /* Copyright (c) 2014 Kevin Devine */
-/* Size = 211 bytes */
+/* Size = 209 bytes */
 
-char modexp[] = {
+char modexp_new[] = {
   /* 0000 */  "\x53"                  /*  push ebx                       */
   /* 0001 */  "\x0F\x42\xDF"          /*  cmovb ebx, edi                 */
   /* 0004 */  "\x8B\xD1"              /*  mov edx, ecx                   */
@@ -105,8 +105,7 @@ char modexp[] = {
   /* 00C7 */  "\x40"                  /*  inc eax                        */
   /* 00C8 */  "\x3B\xC2"              /*  cmp eax, edx                   */
   /* 00CA */  "\x76\xEB"              /*  jbe 000000B7h                  */
-  /* 00CC */  "\xC1\xE1\x02"          /*  shl ecx, 02h                   */
-  /* 00CF */  "\x03\xE1"              /*  add esp, ecx                   */
-  /* 00D1 */  "\x61"                  /*  popad                          */
-  /* 00D2 */  "\xC3"                  /*  ret                            */
+  /* 00CC */  "\x8D\x24\x8C"          /*  lea esp, dword ptr [esp+ecx*4] */
+  /* 00CF */  "\x61"                  /*  popad                          */
+  /* 00D0 */  "\xC3"                  /*  ret                            */
 };
