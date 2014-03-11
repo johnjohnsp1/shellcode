@@ -1,8 +1,7 @@
-
 /* Copyright (c) 2014 Kevin Devine */
 /* Size = 209 bytes */
 
-char modexp_new[] = {
+char modexp[] = {
   /* 0000 */  "\x53"                  /*  push ebx                       */
   /* 0001 */  "\x0F\x42\xDF"          /*  cmovb ebx, edi                 */
   /* 0004 */  "\x8B\xD1"              /*  mov edx, ecx                   */
