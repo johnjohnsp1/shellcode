@@ -1,7 +1,7 @@
 ; ********************************************************* 
-; 211 bytes Modular Exponentiation function
+; Modular Exponentiation routine, 209 bytes
 ; Derived from work originally by Z0MBiE/29a in 2001
-; I've attempted to optimize for size, managed a 15% reduction.
+; Size optimized by ~15%.
 ;
 ; Last modified by Kevin Devine in 2014
 ; For bug reports, contact me on twitter @cmpxchg8
@@ -156,9 +156,8 @@ sqr_mod:
     inc    eax
     cmp    eax, edx
     jbe    exp_loop
-
-    shl    ecx, 2
-    add    esp, ecx
+ 
+    lea    esp, [esp+4*ecx]
     popad
     ret
     
