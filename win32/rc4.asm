@@ -96,10 +96,10 @@ crypt_loop:
     inc   al                ; x++
     mov   cl, [esi+eax]     ; cl = s[x]
     add   bl, cl            ; y += cl
-    xchg  cl, [esi+ebx]     ; 
-    mov   [esi+eax], cl
-    add   cl, [esi+ebx]    
-    mov   dl, [esi+ecx]     ; dl = s[ s[x] + s[y] ]
+    xchg  cl, [esi+ebx]     ; s[y] = s[x]
+    mov   [esi+eax], cl     ; s[x] = s[y]
+    add   cl, [esi+ebx]     ; cl = s[x] + s[y]
+    mov   dl, [esi+ecx]     ; dl = s[ cl ]
     xor   byte ptr[edi], dl ; p[i] ^= dl
     scasb                   ; p++    
     dec   ebp               ; data_len--
