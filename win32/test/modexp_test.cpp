@@ -1,4 +1,44 @@
+/**
+    *****************************************
+    *** Testing OpenSSL version of modexp ***
+    *****************************************
 
+    P is 768-bits
+
+    Key exchange succeeded
+
+    Session key = AE0340546496CE3417F2394C3757C0CAA5FA94B3165083998
+
+
+    *************************************
+    *** Testing x86 version of modexp ***
+    *************************************
+
+
+    Key exchange succeeded
+
+    Session key = AE0340546496CE3417F2394C3757C0CAA5FA94B3165083998
+
+    *****************************************
+    *** Testing OpenSSL version of modexp ***
+    *****************************************
+
+    P is 1024-bits
+
+    Key exchange succeeded
+
+    Session key = 37AB46FE70E306FA27DE3BB594E513CC2601247CEFC5E3278
+
+
+    *************************************
+    *** Testing x86 version of modexp ***
+    *************************************
+
+
+    Key exchange succeeded
+
+    Session key = 37AB46FE70E306FA27DE3BB594E513CC2601247CEFC5E3278
+*/
 
 #include <stdio.h>
 #include <string.h>
