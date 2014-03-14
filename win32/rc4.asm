@@ -40,7 +40,7 @@ RC4_KEY struct
 RC4_KEY ends
 
 .code
-    
+
     public _rc4_set_key
     public rc4_set_key
     
@@ -75,7 +75,6 @@ init_key:
     popad
     ret
     
-
     public _rc4
     public rc4
     
@@ -97,10 +96,9 @@ crypt_loop:
     inc   al                ; x++
     mov   cl, [esi+eax]     ; cl = s[x]
     add   bl, cl            ; y += cl
-    mov   dl, [esi+ebx]     ; dl = s[y]
-    mov   [esi+ebx], cl     ; s[y] = s[x]
-    mov   [esi+eax], dl     ; s[x] = s[y]
-    add   cl, dl            ; s[x] + s[y]
+    xchg  cl, [esi+ebx]     ; 
+    mov   [esi+eax], cl
+    add   cl, [esi+ebx]    
     mov   dl, [esi+ecx]     ; dl = s[ s[x] + s[y] ]
     xor   byte ptr[edi], dl ; p[i] ^= dl
     scasb                   ; p++    
