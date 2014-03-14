@@ -1,7 +1,7 @@
 ; ********************************************************* 
 ; Modular Exponentiation routine, 209 bytes
 ; Derived from work originally by Z0MBiE/29a in 2001
-; Size optimized by ~15%.
+; Size optimized by ~17%.
 ;
 ; Last modified by Kevin Devine in 2014
 ; For bug reports, contact me on twitter @cmpxchg8
