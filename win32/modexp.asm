@@ -1,15 +1,17 @@
 ; ********************************************************* 
 ; Modular Exponentiation routine, 209 bytes
 ; Derived from work originally by Z0MBiE/29a in 2001
-; Size optimized by ~17%.
+; Size optimized by ~15%.
 ;
 ; Last modified by Kevin Devine in 2014
 ; For bug reports, contact me on twitter @cmpxchg8
 ; *********************************************************
 .686
-.model flat
+.model flat, C
 .code
 
+    public _modexp
+    public modexp
 ; 
 ; Find the most significant bit in big number
 ; Return value in edx
@@ -64,7 +66,7 @@ mulmod:
     mov    eax, esp            ; save esp
     mov    ebx, edi            ; ebx = x
     cmovnc ebx, esi            ; ebx = (CF==1) ? x : p
-    
+
     ; t = 0
     shl    ecx, 2              ; ecx *= 4 for bytes
     sub    esp, ecx            ; reserve space on stack
@@ -115,6 +117,7 @@ dec_bits:
     popad
     ret
     
+_modexp:
 modexp:
     mov    eax, esp
     pushad
