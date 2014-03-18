@@ -40,10 +40,10 @@ RC4_KEY struct
 RC4_KEY ends
 
 .code
-
+    
     public _rc4_set_key
     public rc4_set_key
-    
+
 _rc4_set_key:
 rc4_set_key:    
     mov   eax, esp
@@ -53,9 +53,9 @@ rc4_set_key:
     mov   esi, [eax+12]          ; key
     mov   ecx, ebp               ; key_idx = key_len
     xor   eax, eax               ; i=0
+    cdq                          ; j=0
     stosd                        ; x=0
     stosd                        ; y=0
-    cdq                          ; j=0
 init_sbox:
     mov   byte ptr[edi+eax], al  ; s[i] = i
     inc   al                     ; i++
@@ -83,27 +83,25 @@ rc4:
     mov   eax, esp
     pushad
     mov   esi, [eax+4]      ; rc4key
-    mov   ebp, [eax+8]      ; data_len
+    mov   ecx, [eax+8]      ; data_len
     mov   edi, [eax+12]     ; uint8_t *p = data
     push  esi               ; save pointer to rc4key
     lodsd                   ; eax = x
     xchg  eax, ebx      
     lodsd                   ; ebx = y
     xchg  eax, ebx
-    xor   ecx, ecx
     cdq
 crypt_loop:
     inc   al                ; x++
-    mov   cl, [esi+eax]     ; cl = s[x]
-    add   bl, cl            ; y += cl
-    xchg  cl, [esi+ebx]     ; s[y] = s[x]
-    mov   [esi+eax], cl     ; s[x] = s[y]
-    add   cl, [esi+ebx]     ; cl = s[x] + s[y]
-    mov   dl, [esi+ecx]     ; dl = s[ cl ]
-    xor   byte ptr[edi], dl ; p[i] ^= dl
-    scasb                   ; p++    
-    dec   ebp               ; data_len--
-    jnz   crypt_loop
+    mov   dl, [esi+eax]     ; cl = s[x]
+    add   bl, dl            ; y += cl
+    xchg  dl, [esi+ebx]     ; s[y] = s[x]
+    mov   [esi+eax], dl     ; s[x] = s[y]
+    add   dl, [esi+ebx]     ; cl = s[x] + s[y]
+    mov   dl, [esi+edx]     ; dl = s[ cl ]
+    xor   byte ptr[edi], dl ; *p ^= (s[ s[x] + s[y] ])
+    inc   edi               ; p++    
+    loop  crypt_loop
     pop   edi               ; edi = rc4key
     stosd                   ; save x
     xchg  eax, ebx 
