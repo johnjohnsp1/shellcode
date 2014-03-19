@@ -41,8 +41,8 @@ typedef struct _rc4_key {
   uint8_t s[256];
 } RC4_KEY_ASM;
 
-extern "C" void rc4_set_key (RC4_KEY_ASM *rc4key, size_t key_len, void *key);
-extern "C" void rc4 (RC4_KEY_ASM *rc4key, size_t data_len, void *data);
+extern "C" void __fastcall rc4_set_key (size_t key_len, void *key, RC4_KEY_ASM *rc4key);
+extern "C" void __fastcall rc4 (size_t data_len, void *data, RC4_KEY_ASM *rc4key);
 
 void encrypt_asm (void *key, size_t key_len, 
   void* data, size_t data_len)
@@ -51,8 +51,8 @@ void encrypt_asm (void *key, size_t key_len,
   uint8_t *t = new uint8_t[data_len];
   memcpy (t, data, data_len);
   
-  rc4_set_key (&rc4asm, key_len, key);
-  rc4 (&rc4asm, data_len, t);
+  rc4_set_key (key_len, key, &rc4asm);
+  rc4 (data_len, t, &rc4asm);
   printf ("\n\nKey: %s\nPlaintext: %s\nCiphertext : ", key, data);
   for (size_t i=0; i<data_len; i++) { printf ("%02x", t[i]); }
   delete[] t;
