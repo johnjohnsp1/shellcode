@@ -1,17 +1,16 @@
-/* Copyright (c) 2014 Kevin Devine */
-/* Size = 209 bytes */
 
-char modexp[] = {
-  /* 0000 */  "\x53"                  /*  push ebx                       */
+/* Copyright (c) 2014 Kevin Devine */
+/* Size = 204 bytes */
+
+char modexp32[] = {
+  /* 0000 */  "\x60"                  /*  pushad                         */
   /* 0001 */  "\x0F\x42\xDF"          /*  cmovb ebx, edi                 */
-  /* 0004 */  "\x8B\xD1"              /*  mov edx, ecx                   */
-  /* 0006 */  "\xC1\xE2\x05"          /*  shl edx, 05h                   */
-  /* 0009 */  "\x4A"                  /*  dec edx                        */
-  /* 000A */  "\x0F\xA3\x13"          /*  bt dword ptr [ebx], edx        */
-  /* 000D */  "\x72\x03"              /*  jc 00000012h                   */
-  /* 000F */  "\x4A"                  /*  dec edx                        */
-  /* 0010 */  "\x75\xF8"              /*  jne 0000000Ah                  */
-  /* 0012 */  "\x5B"                  /*  pop ebx                        */
+  /* 0004 */  "\xC1\xE1\x05"          /*  shl ecx, 05h                   */
+  /* 0007 */  "\x0F\xA3\x0B"          /*  bt dword ptr [ebx], ecx        */
+  /* 000A */  "\x72\x02"              /*  jc 0000000Eh                   */
+  /* 000C */  "\xE2\xF9"              /*  loop 00000007h                 */
+  /* 000E */  "\x89\x4C\x24\x14"      /*  mov dword ptr [esp+14h], ecx   */
+  /* 0012 */  "\x61"                  /*  popad                          */
   /* 0013 */  "\xC3"                  /*  ret                            */
   /* 0014 */  "\x60"                  /*  pushad                         */
   /* 0015 */  "\x8B\xFD"              /*  mov edi, ebp                   */
@@ -75,36 +74,35 @@ char modexp[] = {
   /* 0085 */  "\xC3"                  /*  ret                            */
   /* 0086 */  "\x8B\xC4"              /*  mov eax, esp                   */
   /* 0088 */  "\x60"                  /*  pushad                         */
-  /* 0089 */  "\x8B\x48\x04"          /*  mov ecx, dword ptr [eax+04h]   */
-  /* 008C */  "\x8B\x70\x0C"          /*  mov esi, dword ptr [eax+0Ch]   */
-  /* 008F */  "\x8B\x58\x10"          /*  mov ebx, dword ptr [eax+10h]   */
-  /* 0092 */  "\x8B\x68\x14"          /*  mov ebp, dword ptr [eax+14h]   */
-  /* 0095 */  "\x8B\x40\x08"          /*  mov eax, dword ptr [eax+08h]   */
-  /* 0098 */  "\xC1\xE9\x03"          /*  shr ecx, 03h                   */
-  /* 009B */  "\x2B\xE1"              /*  sub esp, ecx                   */
-  /* 009D */  "\x8B\xFC"              /*  mov edi, esp                   */
-  /* 009F */  "\xC1\xE9\x02"          /*  shr ecx, 02h                   */
-  /* 00A2 */  "\x60"                  /*  pushad                         */
-  /* 00A3 */  "\xF3\xA5"              /*  rep movsd                      */
-  /* 00A5 */  "\x61"                  /*  popad                          */
-  /* 00A6 */  "\x8B\xF4"              /*  mov esi, esp                   */
-  /* 00A8 */  "\x97"                  /*  xchg eax, edi                  */
-  /* 00A9 */  "\x33\xC0"              /*  xor eax, eax                   */
-  /* 00AB */  "\x60"                  /*  pushad                         */
-  /* 00AC */  "\xF3\xAB"              /*  rep stosd                      */
-  /* 00AE */  "\x61"                  /*  popad                          */
-  /* 00AF */  "\xFF\x07"              /*  inc dword ptr [edi]            */
-  /* 00B1 */  "\xF8"                  /*  clc                            */
-  /* 00B2 */  "\xE8\x49\xFF\xFF\xFF"  /*  call 00000000h                 */
-  /* 00B7 */  "\x0F\xA3\x03"          /*  bt dword ptr [ebx], eax        */
-  /* 00BA */  "\x73\x06"              /*  jnc 000000C2h                  */
-  /* 00BC */  "\xE8\x75\xFF\xFF\xFF"  /*  call 00000036h                 */
-  /* 00C1 */  "\xF8"                  /*  clc                            */
-  /* 00C2 */  "\xE8\x6F\xFF\xFF\xFF"  /*  call 00000036h                 */
-  /* 00C7 */  "\x40"                  /*  inc eax                        */
-  /* 00C8 */  "\x3B\xC2"              /*  cmp eax, edx                   */
-  /* 00CA */  "\x76\xEB"              /*  jbe 000000B7h                  */
-  /* 00CC */  "\x8D\x24\x8C"          /*  lea esp, dword ptr [esp+ecx*4] */
-  /* 00CF */  "\x61"                  /*  popad                          */
-  /* 00D0 */  "\xC3"                  /*  ret                            */
+  /* 0089 */  "\x8B\xF2"              /*  mov esi, edx                   */
+  /* 008B */  "\x8B\x58\x04"          /*  mov ebx, dword ptr [eax+04h]   */
+  /* 008E */  "\x8B\x68\x08"          /*  mov ebp, dword ptr [eax+08h]   */
+  /* 0091 */  "\x8B\x40\x0C"          /*  mov eax, dword ptr [eax+0Ch]   */
+  /* 0094 */  "\xC1\xE9\x03"          /*  shr ecx, 03h                   */
+  /* 0097 */  "\x2B\xE1"              /*  sub esp, ecx                   */
+  /* 0099 */  "\x8B\xFC"              /*  mov edi, esp                   */
+  /* 009B */  "\xC1\xE9\x02"          /*  shr ecx, 02h                   */
+  /* 009E */  "\x60"                  /*  pushad                         */
+  /* 009F */  "\xF3\xA5"              /*  rep movsd                      */
+  /* 00A1 */  "\x61"                  /*  popad                          */
+  /* 00A2 */  "\x8B\xF4"              /*  mov esi, esp                   */
+  /* 00A4 */  "\x97"                  /*  xchg eax, edi                  */
+  /* 00A5 */  "\x33\xC0"              /*  xor eax, eax                   */
+  /* 00A7 */  "\x60"                  /*  pushad                         */
+  /* 00A8 */  "\xF3\xAB"              /*  rep stosd                      */
+  /* 00AA */  "\x61"                  /*  popad                          */
+  /* 00AB */  "\xFF\x07"              /*  inc dword ptr [edi]            */
+  /* 00AD */  "\xF8"                  /*  clc                            */
+  /* 00AE */  "\xE8\x4D\xFF\xFF\xFF"  /*  call 00000000h                 */
+  /* 00B3 */  "\x0F\xA3\x03"          /*  bt dword ptr [ebx], eax        */
+  /* 00B6 */  "\x73\x06"              /*  jnc 000000BEh                  */
+  /* 00B8 */  "\xE8\x79\xFF\xFF\xFF"  /*  call 00000036h                 */
+  /* 00BD */  "\xF8"                  /*  clc                            */
+  /* 00BE */  "\xE8\x73\xFF\xFF\xFF"  /*  call 00000036h                 */
+  /* 00C3 */  "\x40"                  /*  inc eax                        */
+  /* 00C4 */  "\x4A"                  /*  dec edx                        */
+  /* 00C5 */  "\x79\xEC"              /*  jns 000000B3h                  */
+  /* 00C7 */  "\x8D\x24\x8C"          /*  lea esp, dword ptr [esp+ecx*4] */
+  /* 00CA */  "\x61"                  /*  popad                          */
+  /* 00CB */  "\xC3"                  /*  ret                            */
 };
