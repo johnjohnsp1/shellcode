@@ -1,35 +1,32 @@
 
 /* Copyright (c) 2014 Kevin Devine */
-/* Size = 51 bytes */
+/* Size = 44 bytes */
 
-char rc4[] = {
+char rc4fc[] = {
   /* 0000 */  "\x8B\xC4"      /*  mov eax, esp                 */
   /* 0002 */  "\x60"          /*  pushad                       */
   /* 0003 */  "\x8B\x70\x04"  /*  mov esi, dword ptr [eax+04h] */
-  /* 0006 */  "\x8B\x68\x08"  /*  mov ebp, dword ptr [eax+08h] */
-  /* 0009 */  "\x8B\x78\x0C"  /*  mov edi, dword ptr [eax+0Ch] */
-  /* 000C */  "\x56"          /*  push esi                     */
-  /* 000D */  "\xAD"          /*  lodsd                        */
-  /* 000E */  "\x93"          /*  xchg eax, ebx                */
-  /* 000F */  "\xAD"          /*  lodsd                        */
-  /* 0010 */  "\x93"          /*  xchg eax, ebx                */
-  /* 0011 */  "\x33\xC9"      /*  xor ecx, ecx                 */
-  /* 0013 */  "\x99"          /*  cdq                          */
-  /* 0014 */  "\xFE\xC0"      /*  inc al                       */
-  /* 0016 */  "\x8A\x0C\x30"  /*  mov cl, byte ptr [eax+esi]   */
-  /* 0019 */  "\x02\xD9"      /*  add bl, cl                   */
-  /* 001B */  "\x86\x0C\x33"  /*  xchg byte ptr [ebx+esi], cl  */
-  /* 001E */  "\x88\x0C\x30"  /*  mov byte ptr [eax+esi], cl   */
-  /* 0021 */  "\x02\x0C\x33"  /*  add cl, byte ptr [ebx+esi]   */
-  /* 0024 */  "\x8A\x14\x31"  /*  mov dl, byte ptr [ecx+esi]   */
-  /* 0027 */  "\x30\x17"      /*  xor byte ptr [edi], dl       */
-  /* 0029 */  "\xAE"          /*  scasb                        */
-  /* 002A */  "\x4D"          /*  dec ebp                      */
-  /* 002B */  "\x75\xE7"      /*  jne 00000014h                */
-  /* 002D */  "\x5F"          /*  pop edi                      */
-  /* 002E */  "\xAB"          /*  stosd                        */
-  /* 002F */  "\x93"          /*  xchg eax, ebx                */
-  /* 0030 */  "\xAB"          /*  stosd                        */
-  /* 0031 */  "\x61"          /*  popad                        */
-  /* 0032 */  "\xC3"          /*  ret                          */
+  /* 0006 */  "\x8B\xFA"      /*  mov edi, edx                 */
+  /* 0008 */  "\x56"          /*  push esi                     */
+  /* 0009 */  "\xAD"          /*  lodsd                        */
+  /* 000A */  "\x93"          /*  xchg eax, ebx                */
+  /* 000B */  "\xAD"          /*  lodsd                        */
+  /* 000C */  "\x93"          /*  xchg eax, ebx                */
+  /* 000D */  "\x99"          /*  cdq                          */
+  /* 000E */  "\xFE\xC0"      /*  inc al                       */
+  /* 0010 */  "\x8A\x14\x30"  /*  mov dl, byte ptr [eax+esi]   */
+  /* 0013 */  "\x02\xDA"      /*  add bl, dl                   */
+  /* 0015 */  "\x86\x14\x33"  /*  xchg byte ptr [ebx+esi], dl  */
+  /* 0018 */  "\x88\x14\x30"  /*  mov byte ptr [eax+esi], dl   */
+  /* 001B */  "\x02\x14\x33"  /*  add dl, byte ptr [ebx+esi]   */
+  /* 001E */  "\x8A\x14\x32"  /*  mov dl, byte ptr [edx+esi]   */
+  /* 0021 */  "\x30\x17"      /*  xor byte ptr [edi], dl       */
+  /* 0023 */  "\x47"          /*  inc edi                      */
+  /* 0024 */  "\xE2\xE8"      /*  loop 0000000Eh               */
+  /* 0026 */  "\x5F"          /*  pop edi                      */
+  /* 0027 */  "\xAB"          /*  stosd                        */
+  /* 0028 */  "\x93"          /*  xchg eax, ebx                */
+  /* 0029 */  "\xAB"          /*  stosd                        */
+  /* 002A */  "\x61"          /*  popad                        */
+  /* 002B */  "\xC3"          /*  ret                          */
 };
