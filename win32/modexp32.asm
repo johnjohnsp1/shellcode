@@ -1,60 +1,70 @@
 ; ********************************************************* 
-; Modular Exponentiation routine, 209 bytes
-; Derived from work originally by Z0MBiE/29a in 2001
-; Size optimized by ~17%.
+; Modular Exponentiation routine in 204 bytes
+; Derived from work by Z0MBiE/29a in 2001
+; Size optimized by ~20%.
 ;
 ; Last modified by Kevin Devine in 2014
 ; For bug reports, contact me on twitter @cmpxchg8
 ; *********************************************************
 .686
-.model flat, C
+.model flat
+
+option epilogue:none
+option prologue:none
+
 .code
 
-    public _modexp
-    public modexp
+  PUSHAD_STRUCT struc
+    _edi  dd  ?
+    _esi  dd  ?
+    _ebp  dd  ?
+    _esp  dd  ?
+    _ebx  dd  ?
+    _edx  dd  ?
+    _ecx  dd  ?
+    _eax  dd  ?
+  PUSHAD_STRUCT ends
 ; 
 ; Find the most significant bit in big number
 ; Return value in edx
 ;
 bitscan:
-    push   ebx
+    pushad
     cmovc  ebx, edi      ; ebx = (CF==1) ? p : e
-    mov    edx, ecx
-    shl    edx, 5        ; edx *= 32
-    dec    edx
+    shl    ecx, 5        ; ecx *= 32 to get number of bits
 get_msb:
-    bt     [ebx], edx    ; test until bit found
+    bt     [ebx], ecx    ; test until bit found
     jc     return_msb
-    dec    edx           ; or no more bits left
-    jnz    get_msb
+    loop   get_msb
 return_msb:
-    pop    ebx
+    mov    [esp][PUSHAD_STRUCT._edx], ecx
+    popad
     ret
-; **************************************************
+; ******************* *******************************
 ; if (t >= m) t -= m;
 ; **************************************************
 cmpsub:
     pushad
-    mov    edi, ebp     ; edi = m
-    jc     init_sub
+    mov    edi, ebp             ; edi = m
+    jb     init_sub             ; we don't need to compare, subtract m
     
-    pushad
-    std
+    pushad                      ; save registers
+    std                         ; move backward
     dec    ecx
-    lea    esi, [esi+4*ecx]
-    lea    edi, [edi+4*ecx]
-    repz   cmpsd
-    cld
+    lea    esi, [esi+4*ecx]     ; esi=&esi+ecx
+    lea    edi, [edi+4*ecx]     ; edi=&edi+ecx
+    repz   cmpsd                ; compare while equal
+    cld                         ; go forward
     popad
-    jc     exit_cmpsub
-init_sub:                       ; t == m
-    clc
+    jb     exit_cmpsub          ; exit if t < m
+init_sub:                       ; t >= m
+    clc                         ; clear carry flag
 sub_loop:
-    lodsd
+    lodsd                       ; load word
     sbb    eax, [edi]           ; t -= m
-    mov    [esi-4], eax
+    mov    [esi-4], eax         ; save word
     lea    edi, [edi+4]
-    loop   sub_loop
+    loop   sub_loop             ; word_len--
 exit_cmpsub:
     popad
     ret
@@ -97,7 +107,7 @@ rcl_loop:                      ; t *= 2
     
     clc
     pushad
-add_loop:                      ; t += x or p
+add_loop:                      ; t += CF ? x : p
     lodsd
     adc    eax, [ebx]
     mov    [esi-4], eax  
@@ -117,16 +127,14 @@ dec_bits:
     popad
     ret
     
-_modexp:
-modexp:
+modexp32 proc fastcall bitlen:dword, base:dword, exponent:dword, modulus:dword, result:dword
     mov    eax, esp
     pushad
     
-    mov    ecx, [eax+4]      ; l
-    mov    esi, [eax+12]     ; modify b instead of copying?
-    mov    ebx, [eax+16]     ; e
-    mov    ebp, [eax+20]     ; m
-    mov    eax, [eax+8]      ; x
+    mov    esi, edx          ; base
+    mov    ebx, [eax+4]      ; exponent
+    mov    ebp, [eax+8]      ; modulus
+    mov    eax, [eax+12]     ; result
     
     shr    ecx, 3            ; ecx /= 8 for bytes
     sub    esp, ecx          ; reserve space for copy of b
@@ -148,20 +156,21 @@ modexp:
     clc                      ; get highest bit of e
     call   bitscan           ; scan ebx
 exp_loop:
-    bt     [ebx], eax        ; e & eax
+    bt     [ebx], eax        ; e & 1
     jnc    sqr_mod
     
     call   mulmod            ; x=(x*p) mod m
-    clc
+    clc                      ; load p instead of x
 sqr_mod:
     call   mulmod            ; p=(p*p) mod m
     
     inc    eax
-    cmp    eax, edx
-    jbe    exp_loop
+    dec    edx
+    jns    exp_loop
  
-    lea    esp, [esp+4*ecx]
+    lea    esp, [esp+4*ecx]  ; free stack
     popad
     ret
-    
+modexp32 endp
+   
     end
