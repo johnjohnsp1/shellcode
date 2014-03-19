@@ -1,9 +1,9 @@
 
 
-; jwasm -I C:\JWasm210bw\WinInc208\include -coff -c -Cp modexp_x86_test.asm
+; jwasm -I C:\JWasm210bw\WinInc208\include -coff -c -Cp dhx.asm
 
 .686
-.model flat, C
+.model flat, c
 
     option casemap:none
     .nolist
@@ -12,11 +12,14 @@
     include <windows.inc>
     include <stdio.inc>
     include <stdlib.inc>
+    
+    ;includelib <msvcrt.lib>
+    includelib <kernel32.lib>
     .list
     .cref
 .data
 
-MAX_NUM equ 128 ; 1024 bytes
+MAX_NUM equ 256 ; 2048 bytes
 
 CStr macro szText:VARARG
   local dbText
@@ -26,10 +29,7 @@ dbText db szText, 0
 exitm <offset dbText>
 endm
 
-public do_keyxchg_asm
-public _do_keyxchg_asm
-
-modexp proto C x:DWORD, l:DWORD, b:DWORD, e:DWORD, m:DWORD
+modexp32 proto fastcall bitlen:dword, base:dword, exponent:dword, modulus:dword, result:dword
 
 .code
 
@@ -39,14 +39,13 @@ dump_hex proc uses esi edi ebx txt:DWORD, buf:DWORD, len:DWORD
     invoke printf, txt
     .while ebx > 0
       mov eax, [esi+ebx-4]
-      invoke printf, CStr("%04X"), eax
+      invoke printf, CStr("%08X"), eax
       sub ebx, 4
     .endw
     ret
 dump_hex endp
 
-_do_keyxchg_asm:
-do_keyxchg_asm proc C uses esi ebx edi p1:DWORD, p_len:DWORD, 
+do_keyxchg_asm proc uses esi ebx edi p1:DWORD, p_len:DWORD, 
     g1:DWORD, g_len:DWORD, x1:DWORD, x_len:DWORD, y1:DWORD, y_len:DWORD
     
     local A[MAX_NUM+1]:BYTE
@@ -70,6 +69,8 @@ do_keyxchg_asm proc C uses esi ebx edi p1:DWORD, p_len:DWORD,
     invoke memcpy, addr x, [x1], [x_len]
     invoke memcpy, addr y, [y1], [y_len]
     
+    invoke printf, CStr(10, "Bitlen = %i"), dword ptr[p_len]
+    
     mov   eax, [p_len] ; maxbits = p_len
     mov   ebx, [g_len]
     mov   ecx, [x_len]
@@ -86,7 +87,7 @@ do_keyxchg_asm proc C uses esi ebx edi p1:DWORD, p_len:DWORD,
     
     mov   [maxbytes], eax
     
-    shl   eax, 3
+    shl   eax, 3   ; eax *= 8
     mov   [maxbits], eax
     
     invoke puts, CStr(10, 10, 
@@ -94,22 +95,25 @@ do_keyxchg_asm proc C uses esi ebx edi p1:DWORD, p_len:DWORD,
         "*** Testing x86 version of modexp ***", 10,
         "*************************************")
         
-    
     ; Alice does g ^ x mod p
-    invoke modexp, [maxbits], addr A, addr g, addr x, addr p
+    invoke modexp32, [maxbits], addr g, addr x, addr p, addr A
+    add   esp, 3*4
     
     ; Bob does g ^ y mod p
-    invoke modexp, [maxbits], addr B, addr g, addr y, addr p
+    invoke modexp32, [maxbits], addr g, addr y, addr p, addr B
+    add   esp, 3*4
     
     ; *************************************
     ; Bob and Alice exchange A and B values
     ; *************************************
     
     ; Alice computes session key
-    invoke modexp, [maxbits], addr s1, addr B, addr x, addr p
+    invoke modexp32, [maxbits], addr B, addr x, addr p, addr s1
+    add   esp, 3*4
     
     ; Bob computes session key
-    invoke modexp, [maxbits], addr s2, addr A, addr y, addr p
+    invoke modexp32, [maxbits], addr A, addr y, addr p, addr s2
+    add   esp, 3*4
     
     ; s1 + s2 should be equal
     invoke memcmp, addr s1, addr s2, [maxbytes]
