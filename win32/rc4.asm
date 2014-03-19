@@ -23,12 +23,20 @@
  ;  OTHER DEALINGS IN THE SOFTWARE.
  ;
  ;
- ; Binary:  jwasm -bin rc4.asm
+ ; To test with rc4_test.cpp:
+ ;   jwasm -coff -Cp -c rc4.asm
  ;
+ ; Create a binary:  
+ ;   jwasm -bin rc4.asm
+ ;
+ ; The calling convention is fastcall
  ;
   
 .686
-.model flat, C
+.model flat
+
+option prologue:none
+option epilogue:none
 
 .data
 
@@ -40,18 +48,14 @@ RC4_KEY struct
 RC4_KEY ends
 
 .code
-    
-    public _rc4_set_key
-    public rc4_set_key
 
-_rc4_set_key:
-rc4_set_key:    
+; extern "C" void __fastcall rc4_set_key (size_t key_len, void *key, RC4_KEY_ASM *rc4key);
+rc4_set_key proc fastcall key_len:dword, key:dword, rc4key:dword
     mov   eax, esp
     pushad
     mov   edi, [eax+4]           ; rc4_key
-    mov   ebp, [eax+8]           ; key_len
-    mov   esi, [eax+12]          ; key
-    mov   ecx, ebp               ; key_idx = key_len
+    mov   ebp, ecx               ; key_len
+    mov   esi, edx               ; key
     xor   eax, eax               ; i=0
     cdq                          ; j=0
     stosd                        ; x=0
@@ -74,17 +78,14 @@ init_key:
     jnz   init_key               ; 
     popad
     ret
+rc4_set_key endp
     
-    public _rc4
-    public rc4
-    
-_rc4:
-rc4:
+; extern "C" void __fastcall rc4 (size_t data_len, void *data, RC4_KEY_ASM *rc4key);
+rc4 proc fastcall data_len:dword, data:dword, rc4key:dword
     mov   eax, esp
     pushad
     mov   esi, [eax+4]      ; rc4key
-    mov   ecx, [eax+8]      ; data_len
-    mov   edi, [eax+12]     ; uint8_t *p = data
+    mov   edi, edx          ; uint8_t *p = data
     push  esi               ; save pointer to rc4key
     lodsd                   ; eax = x
     xchg  eax, ebx      
@@ -93,12 +94,12 @@ rc4:
     cdq
 crypt_loop:
     inc   al                ; x++
-    mov   dl, [esi+eax]     ; cl = s[x]
-    add   bl, dl            ; y += cl
-    xchg  dl, [esi+ebx]     ; s[y] = s[x]
+    mov   dl, [esi+eax]     ; dl = s[x]
+    add   bl, dl            ; y += dl
+    xchg  dl, [esi+ebx]     ; swap s[y], s[x]
     mov   [esi+eax], dl     ; s[x] = s[y]
-    add   dl, [esi+ebx]     ; cl = s[x] + s[y]
-    mov   dl, [esi+edx]     ; dl = s[ cl ]
+    add   dl, [esi+ebx]     ; dl = s[x] + s[y]
+    mov   dl, [esi+edx]     ; dl = s[ dl ]
     xor   byte ptr[edi], dl ; *p ^= (s[ s[x] + s[y] ])
     inc   edi               ; p++    
     loop  crypt_loop
@@ -108,5 +109,6 @@ crypt_loop:
     stosd                   ; save y
     popad
     ret
+rc4 endp
 
     end
