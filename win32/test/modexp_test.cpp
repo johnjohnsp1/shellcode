@@ -100,12 +100,10 @@ void do_dh (const char *p_value)
   
   // Alice does g ^ x mod p
   BN_mod_exp (A, g, x, p, ctx);
-  //printf ("\n\nAlice public key = %s", BN_bn2hex (A));
   
   // Bob does g ^ y mod p
   BN_mod_exp (B, g, y, p, ctx);
-  //printf ("\n\nBob public key = %s", BN_bn2hex (B));
-  
+
   // *************************************
   // Bob and Alice exchange A and B values
   // *************************************
@@ -130,6 +128,8 @@ void do_dh (const char *p_value)
     (uint8_t*)&x->d[0], BN_num_bytes(x),
     (uint8_t*)&y->d[0], BN_num_bytes(y));
       
+  printf ("\nTest Complete");
+  
   BN_free (s2);
   BN_free (s1);
   BN_free (p);
