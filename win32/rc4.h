@@ -1,8 +1,7 @@
-
 /* Copyright (c) 2014 Kevin Devine */
 /* Size = 44 bytes */
 
-char rc4fc[] = {
+char rc4[] = {
   /* 0000 */  "\x8B\xC4"      /*  mov eax, esp                 */
   /* 0002 */  "\x60"          /*  pushad                       */
   /* 0003 */  "\x8B\x70\x04"  /*  mov esi, dword ptr [eax+04h] */
