@@ -1,5 +1,5 @@
 ; ********************************************************* 
-; Modular Exponentiation routine in 204 bytes
+; Modular Exponentiation routine in 205 bytes
 ; Derived from work by Z0MBiE/29a in 2001
 ; Size optimized by ~20%.
 ;
@@ -50,13 +50,14 @@ cmpsub:
     
     pushad                      ; save registers
     std                         ; move backward
-    dec    ecx
-    lea    esi, [esi+4*ecx]     ; esi=&esi+ecx
-    lea    edi, [edi+4*ecx]     ; edi=&edi+ecx
+    lodsd                       ; subtract 4
+    scasd                       ; subtract 4
+    lea    esi, [esi+4*ecx]     ;
+    lea    edi, [edi+4*ecx]     ;
     repz   cmpsd                ; compare while equal
-    cld                         ; go forward
+    cld                         ; move forward
     popad
-    jb     exit_cmpsub          ; exit if t < m
+    jb     exit_cmpsub          ; exit if esi < edi
 init_sub:                       ; t >= m
     clc                         ; clear carry flag
 sub_loop:
