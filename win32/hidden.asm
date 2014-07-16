@@ -491,8 +491,8 @@ secure32 proc
     pop    esi
     jz     exit_secure
     
-    ; Generate a session key with RC4 as algorithm
-    ; CryptGenKey (hProvider, CALG_RC4, CRYPT_EXPORTABLE, &hSessionKey);
+    ; Generate a session key with AES-256 as algorithm
+    ; CryptGenKey (hProvider, CALG_AES_256, CRYPT_EXPORTABLE, &hSessionKey);
     lea    ecx, [ebp-@hSessionKey]
     push   ecx                   ; &hSessionKey
     push   eax                   ; CRYPT_EXPORTABLE=1
