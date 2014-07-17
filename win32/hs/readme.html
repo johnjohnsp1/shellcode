@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Hidden Shellcode for Windows</title>
+<h3>Introduction</h3>
+<p>'Hidden' is a 32-bit shell code written for Windows that uses RSA key exchange and robust encryption to hide 
+data transmitted between 2 computers.<br>It consists of a client (the shell code) and a server.<br><br>
+The client will create a cmd.exe process which then accepts data sent to it by the server over encrypted channel</p>
+<p>Tested on 32-bit version of Windows XP, 64-bit 7 and Server 2012</p>
+<h3>Client component</h3>
+<p>Encryption algorithms supported are RC2, RC4, DES, 3DES, AES-128, AES-192 and AES-256 (default)</p>
+<img src="ht.jpg">
+<h3>Server component</h3>
+<p>Tested with RSA keys of 512-bit, 1024-bit (default) and 2048-bit modulus</p>
+<p>Below is ncat listening for incoming connections on Windows 7 machine with reverse connecting shell from Server 2012</p>
+<img src="ncat_snapshot.jpg">
+<p>Under Wireshark, it is easy to view information sent between each system.</p>
+<img src="wireshark1.jpg">
+<p>Using the 'Hidden' server component, you can see what's being sent</p>
+<img src="hs.jpg">
+<p>But a passive listener without knowing the session key or at least performing a MITM attack, cannot.</p>
+<img src="wireshark2.jpg">
+<h3>Compiling</h3>
+<p>Compiled only using Visual Studio 2012 but previous versions of MSVC should be fine.</p>
+<p>hs.cpp is the server component, ht.cpp is test client that establishes connection</p>
+</head>
+</html>
