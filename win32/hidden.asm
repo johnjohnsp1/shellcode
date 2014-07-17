@@ -93,7 +93,7 @@
     ends
     
     @len     DWORD ?
-    @buf     BYTE BUFSIZ+128 dup (?)
+    @buf     BYTE BUFSIZ+64 dup (?)
   x ends
   
   ROL32 macro iNum:req, iBits:req
@@ -370,7 +370,9 @@ send32 proc
     jecxz  send_data
     
     ; CryptEncrypt (hSessionKey, 0, TRUE, 0, buf, &len, BUFSIZ);
-    push   [ebp][x.@buflen]      ; BUFSIZ
+    mov    ecx, [ebp][x.@buflen]
+    add    ecx, 64
+    push   ecx                   ; BUFSIZ
     push   esi                   ; &len
     lea    eax, [esi+4]
     push   eax                   ; buf
@@ -416,6 +418,7 @@ recv32 proc
     push   esi
     lodsd                        ; eax=len
     mov    ecx, [ebp][x.@buflen]
+    add    ecx, 64
     cmp    eax, ecx              ; len=(len>BUFSIZ) ? BUFSIZ : len;
     cmova  eax, ecx
     
@@ -491,8 +494,8 @@ secure32 proc
     pop    esi
     jz     exit_secure
     
-    ; Generate a session key with AES-256 as algorithm
-    ; CryptGenKey (hProvider, CALG_AES_256, CRYPT_EXPORTABLE, &hSessionKey);
+    ; Generate a session key with user defined algorithm, default is AES-256
+    ; CryptGenKey (hProvider, CRYPT_ALG, CRYPT_EXPORTABLE, &hSessionKey);
     lea    ecx, [ebp-@hSessionKey]
     push   ecx                   ; &hSessionKey
     push   eax                   ; CRYPT_EXPORTABLE=1
